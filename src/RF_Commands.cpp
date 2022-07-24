@@ -30,6 +30,7 @@ bool RFC_Class::waitAckDone()
             return true;
         }
     }
+    return false;
 }
 
 void RFC_Class::SendFrame(RF_Frame frame)
@@ -47,6 +48,7 @@ void RFC_Class::SendFrame(RF_Frame frame)
 
 String RFC_Class::BuildFrame(String data)
 {
+    return String();
 }
 
 RF_Frame RFC_Class::BuildFrame(uint8_t msgType, uint8_t cmdCode)
