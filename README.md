@@ -1,20 +1,44 @@
 ## Flash Management (Max 256 page - every page 128 byte)
-# Page 0 - 2 (Room 1)
-   0: 0x0 - 0x1FF  (512 Byte)
-   1: 0x200 - 0x3FF
-   2: 0x400 - 0x5FF
+
+use the first 12 bytes to store room information
+
+|Byte 1          | Byte 2      | Other |
+|----------------|-------------|-------|
+| Number (MSB)   | Number(LSB) | RFU   |
+
+# Page 0 - 2 (Room 1) (Max 1500 tag)
+
+Number address: 0x0000
+| Page | Start Address | End Adress |  Size (byte)  |
+|------|---------------|------------|---------------|
+|  0   |     0x00C     |   0x1FF    |     500       |
+|  1   |     0x200     |   0x3FF    |     512       |
+|  2   |     0x400     |   0x5FF    |     512       |
 # Page 3 - 5 (Room 2)
-   3: 0x600 - 0x7FF
-   4: 0x800 - 0x9FF
-   5: 0x1000 - 0x11FF
+Number address: 0x0600
+| Page | Start Address  | End Adress  |  Size (byte)  |
+|------|----------------|------------ |---------------|
+|  3   |     0x060C     |   0x07FF    |     500       |
+|  4   |     0x0800     |   0x09FF    |     512       |
+|  5   |     0x1000     |   0x11FF    |     512       |
+
 # Page 6 - 8 (Room 3)
-   6: 0x1200 - 0x13FF
-   7: 0x1400 - 0x15FF
-   8: 0x1600 - 0x17FF
+Number address: 0x1200
+| Page | Start Address  | End Adress  |  Size (byte)  |
+|------|----------------|------------ |---------------|
+|  6   |     0x120C     |   0x13FF    |     500       |
+|  7   |     0x1400     |   0x15FF    |     512       |
+|  8   |     0x1600     |   0x17FF    |     512       |
+
 # Page 9 - 11 (Room 4)
-   9: 0x1800 - 0x19FF
-   10: 0x2000 - 0x21FF
-   11: 0x2200 - 0x23FF
+Number address: 0x1800
+| Page | Start Address  | End Adress  |  Size (byte)  |
+|------|----------------|------------ |---------------|
+|  9   |     0x180C     |   0x19FF    |     500       |
+|  10  |     0x2000     |   0x21FF    |     512       |
+|  11  |     0x2200     |   0x23FF    |     512       |
+
+
 # Page 12 - 14
 # Page 15 - 17
 # Page 18 - 20

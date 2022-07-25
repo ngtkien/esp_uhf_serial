@@ -3,18 +3,16 @@
 #include "RF_Commands.h"
 #include "HardwareSerial.h"
 #include <Wire.h>
-#include <AT24Cxx.h>
+#include <extEEPROM.h>
 
-#define i2c_address 0x50
-/** the current address in the EEPROM (i.e. which byte we're going to write to next) **/
-int address = 32767;
 
-AT24Cxx eep(i2c_address, 32);
 HardwareSerial SerialRF(2);
 RFC_Class rfc(&SerialRF);
+const uint32_t totalKBytes = 32;         //for read and write test functions
+extEEPROM eep(kbits_256, 1, 64);         //device size, number of devices, page size
 
 #define RFIDEN 14
-uint8_t epc_list[4][12] = {
+byte epc_list[4][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0xA8, 0x4B},
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0x6A, 0x19},
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x18},
@@ -22,51 +20,92 @@ uint8_t epc_list[4][12] = {
 };
 
 #define ROOM_NUMBER 4
-
-uint8_t room1[10][12] = {
+#define ROOM_1_LENGTH_ADDR 0x0
+#define ROOM_1_ADDRESS 0xC
+byte room1[10][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0xA8, 0x4B},
 };
-uint8_t room2[10][12] = {
+#define ROOM_2_LENGTH_ADDR 0x600
+#define ROOM_2_ADDRESS 0x60C
+byte room2[10][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0x6A, 0x19}, 
 };
-uint8_t room3[10][12] = {
+#define ROOM_3_LENGTH_ADDR 0x1200
+#define ROOM_3_ADDRESS 0x120C
+byte room3[10][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x18},
 };
-uint8_t room4[10][12] = {
+#define ROOM_4_LENGTH_ADDR 0x1800
+#define ROOM_4_ADDRESS 0x180C
+byte room4[10][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x1B}
 };
 
-uint8_t test_source[12] = {0xE2,0x80,0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x18};
+byte test_source[12] = {0xE2,0x80,0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x18};
+byte data[12] = {0x0};
 
+void load_data(){
+
+}
+
+void eeErase(uint8_t chunk, uint32_t startAddr, uint32_t endAddr)
+{
+  chunk &= 0xFC;                //force chunk to be a multiple of 4
+  uint8_t data[chunk];
+  Serial.println(F("Erasing..."));
+  for (int i = 0; i < chunk; i++) data[i] = 0xFF;
+  uint32_t msStart = millis();
+
+  for (uint32_t a = startAddr; a <= endAddr; a += chunk) {
+    if ( (a & 0xFFF) == 0 ) Serial.println(a);
+    eep.write(a, data, chunk);
+  }
+  uint32_t msLapse = millis() - msStart;
+  Serial.print(F("Erase lapse: "));
+  Serial.print(msLapse);
+  Serial.print(F(" ms"));
+}
 void test_eeprom(){
-    int val = analogRead(0) / 4;
-	Serial.println(val);
+    Serial.println("TEST WRITE");
 
-	eep.write(address, 'c');
-	/***
-	Advance to the next address, when at the end restart at the beginning.
-	***/
-	address = address + 1;
-	if (address == eep.length())
-	{
-        Serial.println("reset address");
-		address = 32767;
-	}
+    eep.write(ROOM_1_LENGTH_ADDR + 1 ,  1);
+    eep.write(ROOM_1_ADDRESS,epc_list[0],12);
+    eep.write(ROOM_2_LENGTH_ADDR + 1 ,  1);
+    eep.write(ROOM_2_ADDRESS,epc_list[1],12);
+    eep.write(ROOM_3_LENGTH_ADDR + 1 ,  1);
+    eep.write(ROOM_3_ADDRESS,epc_list[2],12);
+    eep.write(ROOM_4_LENGTH_ADDR + 1 ,  1);
+    eep.write(ROOM_4_ADDRESS,epc_list[3],12);
+    Serial.println("TEST READ");
 
-    // read a byte from the current address of the EEPROM
-    byte value = eep.read(address);
-
-    Serial.print(address);
-    Serial.print("\t");
-    Serial.print(value, DEC);
+    uint8_t maxDataSize = 12;
+    memset(data, 0, maxDataSize);
+    eep.read(ROOM_1_ADDRESS,data,maxDataSize);
+    for(int i = 0; i < maxDataSize ; i++){
+        Serial.printf("%02X", data[i], HEX);
+    }
     Serial.println();
 
-    address = address + 1;
-    if (address == eep.length()) {
-        Serial.println("reset address");
-        address = 0;
+    memset(data, 0, maxDataSize);
+    eep.read(ROOM_2_ADDRESS,data,maxDataSize);
+    for(int i = 0; i < maxDataSize ; i++){
+        Serial.printf("%02X", data[i], HEX);
     }
+    Serial.println();
 
+    memset(data, 0, maxDataSize);
+    eep.read(ROOM_3_ADDRESS,data,maxDataSize);
+    for(int i = 0; i < maxDataSize ; i++){
+        Serial.printf("%02X", data[i], HEX);
+    }
+    Serial.println();
+
+    memset(data, 0, maxDataSize);
+    eep.read(ROOM_4_ADDRESS,data,maxDataSize);
+    for(int i = 0; i < maxDataSize ; i++){
+        Serial.printf("%02X", data[i], HEX);
+    }
+    Serial.println();
 }
 bool find_in_epc_list(uint8_t input[]){
     for(int i = 0; i < 4 ; i++){
@@ -92,23 +131,28 @@ bool compare(uint8_t input[], uint8_t source[]){
     }
     return count == 12;
 }
+void flashInit(){
 
-void printContents();
+    uint8_t eepStatus = eep.begin(eep.twiClock400kHz);   //go fast!
+    if (eepStatus) {
+        Serial.print(F("extEEPROM.begin() failed, status = "));
+        Serial.println(eepStatus);
+        while (1);
+    }
+}
+
 void setup()
 {
     
     SerialRF.begin(115200, SERIAL_8N1,16,17);
     Serial.begin(115200);
     rfc.begin();
-    Wire.begin();
-    //find_in_epc_list(test_source);
-    Serial.println ( "14CORE | 24C256 EEPROM TEST CODE"); // send a message to the serial monitor 	
-    Serial.println ( "--------------------------------");
-    Serial.println ( "START... ");
-    Wire.begin();
-    //
-    test_eeprom();
-    printContents();
+    flashInit();
+
+    //erase all
+    uint8_t chunkSize = 64;    //this can be changed, but must be a multiple of 4 since we're writing 32-bit integers
+    eeErase(chunkSize, 0, totalKBytes * 1024 - 1);
+    //test_eeprom();
 }
 void uhf_read_user_data(){
     
@@ -131,50 +175,13 @@ void uhf_process(){
        Serial.printf("Error Code: %X\n", rfc.error.ErrorCode());
     }
 }
-void test_flash(){
-    while (Serial.available()) {
-    int i, m;
-    String data = Serial.readStringUntil('\n');
- 
-    for (i = 0, m = data.length(); i < m; ++i) {
-      eep.write(i, data[i]);
-	  
-	  Serial.println("14CORE | AT24C256 WRITE CODE TEST");
-	  Serial.println("---------------------------------");
-      Serial.println("Writing  : ");
-      Serial.print(data[i]);
-      Serial.println(" IN : ");
-      Serial.println(i);
-    }
-    eep.write(i, 0xFF); //Start write 
-    printContents();
-  }
-  delay(1);
-}
+
 void loop()
 {
 
     delay(300);
-    uhf_process();
+    // uhf_process();
 
-
-    //Test Flash
-    //test_flash();
 }
 
-
- 
-void printContents() {
-int eeaddress = 32767;
-byte value;
- 
-  while (true) {
-    value = eep.read(eeaddress++);
-    if ((value == 0xFF) || (eeaddress == 32768)) {
-      Serial.println();
-      break;
-    }
-    Serial.print((char)value);
-  }
-}
  
