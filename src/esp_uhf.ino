@@ -4,6 +4,23 @@
 #include "HardwareSerial.h"
 #include <Wire.h>
 #include <extEEPROM.h>
+#include <Mux.h>
+using namespace admux;
+
+/*
+ * Creates a Mux instance.
+ *
+ * 1st argument is the SIG (signal) pin (Arduino digital output pin 3).
+ * 2nd argument is the S0-S3 (channel control) pins (Arduino pins 8, 9, 10, 11).
+ */
+Mux mux(Pin(14, OUTPUT, PinType::Digital), Pinset(25, 33,32, 27));
+
+//Multiplex
+#define EN 26
+#define S0 25
+#define S1 33
+#define S2 32
+#define S3 27
 
 
 HardwareSerial SerialRF(2);
@@ -86,8 +103,37 @@ ROOM_ADDR table[4] = {ROOM_ADDR::ROOM_1_ADDRESS, ROOM_ADDR::ROOM_2_ADDRESS, ROOM
 byte test_source[12] = {0xE2,0x80,0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x18};
 byte data[12] = {0x0};
 
-void load_data(){
 
+void onLed(ROOM_ADDR room){
+    switch (room)
+    {
+    case ROOM_ADDR::ROOM_1_ADDRESS:
+        mux.write(LOW, 1);
+        delay(1000);
+        mux.write(HIGH, 1);
+        /* code */
+        break;
+    case ROOM_ADDR::ROOM_2_ADDRESS:
+        mux.write(LOW, 2);
+        delay(1000);
+        mux.write(HIGH, 2);
+        /* code */
+        break;
+    case ROOM_ADDR::ROOM_3_ADDRESS:
+        mux.write(LOW, 3);
+        delay(1000);
+        mux.write(HIGH, 3);
+        /* code */
+        break;
+    case ROOM_ADDR::ROOM_4_ADDRESS:
+        mux.write(LOW, 4);
+        delay(1000);
+        mux.write(HIGH, 4);
+        /* code */
+        break;
+    default:
+        break;
+    }
 }
 
 void eeErase(uint8_t chunk, uint32_t startAddr, uint32_t endAddr)
@@ -293,14 +339,42 @@ void flashInit(){
         while (1);
     }
 }
-
+byte controlPins[] = {B00000000, 
+                  B10000000,
+                  B01000000,
+                  B11000000,
+                  B00100000,
+                  B10100000,
+                  B01100000,
+                  B11100000,
+                  B00010000,
+                  B10010000,
+                  B01010000,
+                  B11010000,
+                  B00110000,
+                  B10110000,
+                  B01110000,
+                  B11110000 }; 
 void setup()
 {
-    
+    // pinMode(EN, OUTPUT); 
+    // pinMode(S0, OUTPUT); 
+    // pinMode(S1, OUTPUT); 
+    // pinMode(S2, OUTPUT); 
+    // pinMode(S3, OUTPUT); 
+
     SerialRF.begin(115200, SERIAL_8N1,16,17);
     Serial.begin(115200);
     rfc.begin();
     flashInit();
+
+    // digitalWrite(EN, HIGH);
+    // digitalWrite(S0, LOW);
+    // digitalWrite(S1, LOW);
+    // digitalWrite(S2, LOW);
+    // digitalWrite(S3, LOW);
+
+      /* Connects to channel i and writes HIGH */;
 
     //erase all
     //uint8_t chunkSize = 64;    //this can be changed, but must be a multiple of 4 since we're writing 32-bit integers
@@ -339,6 +413,7 @@ void uhf_process(){
                 Serial.printf("Find it in Room address 0x%04X\n", table[i]);
                 //TODO: On Relay 
                 //
+                onLed(table[i]);
                 break;
             }
         }
@@ -352,9 +427,10 @@ void uhf_process(){
 void loop()
 {
 
-    delay(500);
+  delay(300);
+    //delay(500);
     
-    uhf_process();
+uhf_process();
 
 }
 
