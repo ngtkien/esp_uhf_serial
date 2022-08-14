@@ -368,28 +368,6 @@ void setup()
     rfc.begin();
     flashInit();
 
-    // digitalWrite(EN, HIGH);
-    // digitalWrite(S0, LOW);
-    // digitalWrite(S1, LOW);
-    // digitalWrite(S2, LOW);
-    // digitalWrite(S3, LOW);
-
-      /* Connects to channel i and writes HIGH */;
-
-    //erase all
-    //uint8_t chunkSize = 64;    //this can be changed, but must be a multiple of 4 since we're writing 32-bit integers
-    //eeErase(chunkSize, 0, totalKBytes * 1024 - 1);
-
-    //test_write();
-    //test_eeprom();
-    // uint16_t size = get_size_room(ROOM_ADDR::ROOM_4_ADDRESS);
-    // Serial.printf("Room size %d\n", size);
-
-    // for(int i = 0; i < 4; i++){
-    //     Serial.printf("Search in Room %d\n", i + 1);
-    //     search_in_flash(test_source,table[i]);
-    // }
-    
 }
 void uhf_read_user_data(){
     
