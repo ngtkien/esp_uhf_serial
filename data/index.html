@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dashboard - ESP32 BMS </title>
+    <!-- CSS files -->
+    <link href="./styles.css" rel="stylesheet">
+    <style type="text/css">
+      .apexcharts-canvas {
+        position: relative;
+        user-select: none;
+        /* cannot give overflow: hidden as it will crop tooltips which overflow outside chart area */
+      }
+
+
+      
+
+      .apexcharts-tooltip {
+        border-radius: 5px;
+        box-shadow: 2px 2px 6px -4px #999;
+        cursor: default;
+        font-size: 14px;
+        left: 62px;
+        /* opacity: 0; */
+        pointer-events: none;
+        position: absolute;
+        top: 20px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        white-space: nowrap;
+        z-index: 12;
+        transition: 0.15s ease all;
+      }
+      .svg_select_boundingRect,
+      .svg_select_points_rot {
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+      }
+      .svg_select_points {
+        fill: #efefef;
+        stroke: #333;
+        rx: 2;
+      }
+
+
+
+
+      .resize-triggers {
+        animation: 1ms resizeanim;
+        visibility: hidden;
+      }
+
+      .resize-triggers,
+      .resize-triggers>div,
+
+
+      .resize-triggers>div {
+        background: #eee;
+        overflow: auto;
+      }
+
+    </style>
+    <style>
+      wordsmine:not(.wm-nohighlight) {
+        color: #222b54;
+        background-color: #ffc100;
+        position: relative;
+        display: inline-block;
+      }
+
+      a wordsmine,
+      button wordsmine {
+        color: currentColor;
+        background: unset;
+      }
+    </style>
+  </head>
+  <body class="theme-light" data-gr-ext-installed="">
+    <div class="wrapper">
+      <aside class="navbar navbar-vertical navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <h1 class="navbar-brand navbar-brand-autodark"></h1>
+          <div class="navbar-nav flex-row d-lg-none">
+            <div class="nav-item d-none d-md-flex me-3">
+              <!-- <div class="btn-list"></div> -->
+            </div>
+            <div class="nav-item dropdown d-none d-md-flex me-3">
+              <div class="dropdown-menu dropdown-menu-end dropdown-menu-card">
+                <div class="card">
+                  <!-- <div class="card-body"></div> -->
+                </div>
+              </div>
+            </div>
+            <!-- <div class="nav-item dropdown"></div> -->
+          </div>
+          <div class="collapse navbar-collapse" id="navbar-menu">
+            <ul class="navbar-nav pt-lg-3">
+              <li class="nav-item"></li>
+              <li class="nav-item dropdown">
+                <div class="dropdown-menu show" data-bs-popper="none">
+                  <div class="dropdown-menu-columns">
+                    <div class="dropdown-menu-column">
+                      <a class="dropdown-item"> Empty page </a>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link">
+                  <span class="nav-link-icon d-md-none d-lg-inline-block">
+                    <!-- Download SVG icon from http://tabler-icons.io/i/checkbox -->
+                  </span>
+                  <span class="nav-link-title"> Forms </span>
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <div class="dropdown-menu show" data-bs-popper="none">
+                  <a class="dropdown-item"> Activity </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+      <div class="page-wrapper">
+        <div class="container-fluid">
+          <!-- Page title -->
+          <div class="page-header d-print-none">
+            <div class="row align-items-center">
+              <div class="col">
+                <!-- Page pre-title -->
+                <div class="page-pretitle"> Overview </div>
+                <h2 class="page-title"> Demo ESP32 UHF </h2>
+              </div>
+              <!-- Page title actions -->
+              <div class="col-auto ms-auto d-print-none">
+                <!-- <div class="btn-list"></div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="page-body">
+          <div class="container-fluid">
+            <div class="row row-deck row-cards">
+              <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                  <div class="card-body" style="min-height: 240px;"><h3 style="min-height: 40px;">Thông tin thiết bị</h3>
+                    <div class="d-flex align-items-baseline">
+                      <div>
+                        <!-- <p class="h2 mb-3 me-0" ></p>Board: <strong>ESP32 DevKit-C</strong> -->
+                        <p class="h2 mb-3 me-0" ></p>Bộ nhớ: <strong>16MB</strong>
+                        <p class="h2 mb-3 me-0" ></p>Tổng số khay: <strong>10</strong> 
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body" style="min-height: 240px;"><h2 style="min-height: 40px;">Thiết lập thiết bị</h2>
+                    <div class="ms-2 d-inline-block">
+
+                      <h4>LED State </h2>
+                      <span id="led_state">-</span>
+                      <p><button id="button" class="button">Toggle</button></p>
+
+                      <p >Độ trễ: <span id="delay">-</span>giây</p>
+                      Thiết lập độ trễ: 
+                      <button style="position: relative; top: 34px; left: 0px;" id="delay_set" class="button">Set</button>
+                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input" minlength="2" maxlength="2" size="5" > 
+                     
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                  <div class="card-body" style="position: relative;">
+                    <div class="d-flex align-items-center"> <h3 style="min-height: 40px;">Thiết lập khoảng cách cho đầu đọc</h3>
+                    </div>
+                    <div class="d-flex align-items-baseline">
+                      <div class="h4 mb-3 me-2">
+                        <p style="position:relative; left:30px; ">Độ lợi Ăn-ten: <strong><span id="gain">-</span>dB</strong></p>
+                        <button id="button_pow" class="button" style="position: relative; left:100px ">Get</button>
+                        <form>
+                          <p><label style="position:relative; left:30px; top: 20px;"><strong>Thiết lập độ lợi:</strong></label></p>
+                          <select style="position:relative; left:55px; top: 20px" id="gain_set">
+                          <option value="selectcard">--- Vui lòng chọn ---</option>
+                          <option value=20>20</option>
+                          <option value=21>21</option>
+                          <option value=22>22</option>
+                          <option value=23>23</option>
+                          <option value=24>24</option>
+                          <option value=25>25</option>
+                          <option value=26>26</option>
+                          </select>
+                        </form>
+                        <button style="position: relative; top: 40px; left:60%" id="set_pow" class="button">Set</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body" style="position: relative;">
+                    <div class="d-flex align-items-center"> <h3>Chức năng hiện tại</h3>
+                    </div>
+                    <div class="d-flex align-items-baseline"  style="min-height: 20px;">
+                      <h3 style="position: relative; top: 10px; left:100px; min-width: none;"><strong><span id="function">Normal</span></strong></h3>
+                      </div>
+                    <div class="d-flex align-items-baseline"  style="min-height: 80px;">
+                      <a class="btn btn-white" style="position: relative; top: 50px; left: 55px;" id="fn_normal">Chuyển trạng thái</a>
+                      <!-- <a class="btn btn-white" style="position: relative; top: 50px; left: 45px;" id="fn_save">Save</a> -->
+                    
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="row row-cards">
+                  <div class="col-12">
+                    <div class="card">
+                      <div class="card-body" style="position: relative;">
+                        <div class="d-flex align-items-center"><h3>Thao Tác Thẻ</h3>
+                        </div>
+                        <div class="d-flex align-items-baseline" style="min-height: 290px;">
+                          <form >
+                            <p><lable style="position:relative; left:30px; ">EPC Tags: <input class="input" type="text" id ="epc_tag" type="text" minlength="12" maxlength="12" size="30" name="epc_tag" style="position:relative; left: 30px; top:30px; "></lable></p>
+                            <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô lưu trữ:</label>
+                            <select id="storage" style="position:relative;top:0px;left:80px; top: 30px">
+                            <option value="selectcard">--- Vui lòng chọn ô ---</option>
+                            <option value=1>1</option>
+                            <option value=2>2</option>
+                            <option value=3>3</option>
+                            <option value=4>4</option>
+                            <option value=5>5</option>
+                            <option value=6>6</option>
+                            <option value=7>7</option>z
+                            <option value=8>8</option>
+                            <option value=9>9</option>
+                            <option value=10>10</option>
+                            </select>
+                          </form><br>
+                          <button id="btn_save" class="button" style="position: relative; top: 120px; right: 110px">Lưu</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="d-flex align-items-center"><h3>Quản lý bộ nhớ</h3>
+                          
+                        </div>
+                        <div class="d-flex align-items-baseline" style="min-height: 100px;">
+
+                        </div>
+                      
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="card">
+                  <div class="card-header border-0">
+                    <div class="card-title">Development activity</div>
+                  </div>
+                  <div class="position-relative">
+                    <div class="position-absolute top-0 left-0 px-3 mt-1 w-75">
+                      <div class="row g-2"></div>
+                    </div>
+                    <div id="chart-development-activity" style="min-height: 200px;">
+                      <div  style="width: 666px; height: 192px;">
+                        <div  style="max-height: 96px;"></div>
+                        <div style="left: 240.655px; top: 123.035px;">
+                          
+                        </div>
+                        <div>
+                          <div></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="resize-triggers"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <a class="card card-sponsor" target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
+                  <div class="card-body"></div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="footer footer-transparent d-print-none">
+          <div class="container-fluid">
+            <div class="row text-center align-items-center flex-row-reverse">
+              <div class="col-lg-auto ms-lg-auto"></div>
+              <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                <ul class="list-inline list-inline-dots mb-0"></ul>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <div class="modal modal-blur fade" id="modal-report" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">New report</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" name="example-text-input" placeholder="Your report name">
+            </div>
+            <label class="form-label">Report type</label>
+            <div class="form-selectgroup-boxes row mb-3">
+              <div class="col-lg-6">
+                <label class="form-selectgroup-item">
+                  <input type="radio" name="report-type" value="1" class="form-selectgroup-input" checked="">
+                  <span class="form-selectgroup-label d-flex align-items-center p-3">
+                    <span class="me-3">
+                      <span class="form-selectgroup-check"></span>
+                    </span>
+                    <span class="form-selectgroup-label-content">
+                      <span class="form-selectgroup-title strong mb-1">Simple</span>
+                      <span class="d-block text-muted">Provide only basic data needed for the report</span>
+                    </span>
+                  </span>
+                </label>
+              </div>
+              <div class="col-lg-6">
+                <label class="form-selectgroup-item">
+                  <input type="radio" name="report-type" value="1" class="form-selectgroup-input">
+                  <span class="form-selectgroup-label d-flex align-items-center p-3">
+                    <span class="me-3">
+                      <span class="form-selectgroup-check"></span>
+                    </span>
+                    <span class="form-selectgroup-label-content">
+                      <span class="form-selectgroup-title strong mb-1">Advanced</span>
+                      <span class="d-block text-muted">Insert charts and additional advanced analyses to be inserted in the report</span>
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-8">
+                <div class="mb-3">
+                  <label class="form-label">Report url</label>
+                  <div class="input-group input-group-flat">
+                    <span class="input-group-text"> https://tabler.io/reports/ </span>
+                    <input type="text" class="form-control ps-0" value="report-01" autocomplete="off">
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="mb-3">
+                  <label class="form-label">Visibility</label>
+                  <select class="form-select">
+                    <option value="1" selected="">Private</option>
+                    <option value="2">Public</option>
+                    <option value="3">Hidden</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="mb-3">
+                  <label class="form-label">Client name</label>
+                  <input type="text" class="form-control">
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="mb-3">
+                  <label class="form-label">Reporting period</label>
+                  <input type="date" class="form-control">
+                </div>
+              </div>
+              <div class="col-lg-12">
+                <div>
+                  <label class="form-label">Additional information</label>
+                  <textarea class="form-control" rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      var gateway = `ws://${window.location.hostname}/ws`;
+      var websocket;
+      window.addEventListener('load', onLoad);
+      function initWebSocket() {
+        console.log('Trying to open a WebSocket connection...');
+        websocket = new WebSocket(gateway);
+        websocket.onopen    = onOpen;
+        websocket.onclose   = onClose;
+        websocket.onmessage = onMessage; // <-- add this line
+      }
+      function onOpen(event) {
+        console.log('Connection opened');
+      }
+      function onClose(event) {
+        console.log('Connection closed');
+        setTimeout(initWebSocket, 2000);
+      }
+      //TODO: Receive Message from ESP32
+      function onMessage(event) {
+        //parse data -> json
+        let data = JSON.parse(event.data);
+        console.log(data);
+        if(data.action == "led_toggle"){
+  //Handle by key
+          document.getElementById('led_state').innerHTML = data.led_status;
+        }
+        if(data.action == "get_gain"){
+          document.getElementById('gain').innerHTML = data.gain;
+        }
+        if(data.action == "change_mode"){
+          document.getElementById("function").innerHTML = data.mode;
+        }
+      
+      }
+      function onLoad(event) {
+        initWebSocket();
+        initButton();
+      }
+      //TODO: Init for button
+      function initButton() {
+        document.getElementById('button').addEventListener('click', toggle_led);
+        document.getElementById('button_pow').addEventListener('click', get_gain);
+        document.getElementById('set_pow').addEventListener('click', set_gain);
+        document.getElementById('btn_save').addEventListener('click', save_tags);
+        document.getElementById('fn_normal').addEventListener('click', change_fn);
+        document.getElementById('delay_set').addEventListener('click',delay_set);
+      }
+
+      //TODO: send backend -> toggle led
+      function toggle_led(){
+        //web send to esp32
+        websocket.send(JSON.stringify({'action':'toggle_led'}));
+      }
+      //TODO: send backend ->Change mode device
+      function change_fn(){
+           websocket.send(JSON.stringify({'action':'change_mode'}));          
+      }
+
+      //TODO: send backend -> get gain
+      function get_gain(){
+        //web send to esp32
+        //websocket.send('getpow');
+        websocket.send(JSON.stringify({'action':'get_gain'}));
+        
+      }
+      //TODO: send backend -> set gain
+      function set_gain(){
+    
+        let pow =  document.getElementById('gain_set');
+        var selectedValue = pow.options[pow.selectedIndex].value;
+        if (selectedValue == "selectcard" )
+        {
+            alert("Choose pow");
+            return;
+        }
+        websocket.send(JSON.stringify({'action':'set_gain',
+      'gain':parseInt(selectedValue)}));
+      }
+    
+    
+      //TODO: send backend -> save epc_tags 
+      function save_tags(){
+        let epc =  document.getElementById('epc_tag').value;
+        let store =  document.getElementById('storage');
+        var selectedValue = store.options[store.selectedIndex].value;
+        if (epc.length < 12   || selectedValue == "selectcard" )
+        {
+            alert("value should be eual 12 and choose room");
+            return;
+        }
+        console.log("epc: " + epc + " storage: " + selectedValue);
+        websocket.send(JSON.stringify({'action':'save_tags','epc':epc,'room':selectedValue}));
+      }
+      function delay_set(){
+        let delay =  document.getElementById('delay_input');
+        var _value = delay.value;
+        websocket.send(JSON.stringify({'action':'delay','value':_value}));
+      }
+    </script>
+  </body>
+</html>

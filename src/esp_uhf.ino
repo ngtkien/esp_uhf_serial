@@ -1,10 +1,12 @@
 
 #include <Arduino.h>
-#include "RF_Commands.h"
-#include "HardwareSerial.h"
-#include <Wire.h>
-#include <extEEPROM.h>
-#include <Mux.h>
+#include "esp_uhf.h"
+// #include "RF_Commands.h"
+// #include "HardwareSerial.h"
+// #include <Wire.h>
+// #include <extEEPROM.h>
+// #include <Mux.h>
+// #include "WebServer.h"
 using namespace admux;
 
 /*
@@ -357,38 +359,48 @@ byte controlPins[] = {B00000000,
                   B11110000 }; 
 void setup()
 {
-    // pinMode(EN, OUTPUT); 
-    // pinMode(S0, OUTPUT); 
-    // pinMode(S1, OUTPUT); 
-    // pinMode(S2, OUTPUT); 
-    // pinMode(S3, OUTPUT); 
+    
 
     SerialRF.begin(115200, SERIAL_8N1,16,17);
     Serial.begin(115200);
+
+    pinMode(ledPin, OUTPUT);
+    // Initialize SPIFFS
+    if(!SPIFFS.begin(true)){
+      Serial.println("An Error has occurred while mounting SPIFFS");
+      return;
+    }
+    else {
+      Serial.println("Access to SPIFFS success");
+    }
+    WiFi.mode(WIFI_AP_STA);
+  /* start SmartConfig */
+    WiFi.beginSmartConfig();
+ 
+    /* Wait for SmartConfig packet from mobile */
+    Serial.println("Waiting for SmartConfig.");
+    while (!WiFi.smartConfigDone()) {
+      delay(500);
+      Serial.print(".");
+    }
+    Serial.println("");
+    Serial.println("SmartConfig done.");
+ 
+    /* Wait for WiFi to connect to AP */
+    Serial.println("Waiting for WiFi");
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+    Serial.println("WiFi Connected.");
+    Serial.print("IP Address: ");
+    Serial.println(WiFi.localIP());
+    //WebSetUp
+    WebSetup();
+
     rfc.begin();
     flashInit();
 
-    // digitalWrite(EN, HIGH);
-    // digitalWrite(S0, LOW);
-    // digitalWrite(S1, LOW);
-    // digitalWrite(S2, LOW);
-    // digitalWrite(S3, LOW);
-
-      /* Connects to channel i and writes HIGH */;
-
-    //erase all
-    //uint8_t chunkSize = 64;    //this can be changed, but must be a multiple of 4 since we're writing 32-bit integers
-    //eeErase(chunkSize, 0, totalKBytes * 1024 - 1);
-
-    //test_write();
-    //test_eeprom();
-    // uint16_t size = get_size_room(ROOM_ADDR::ROOM_4_ADDRESS);
-    // Serial.printf("Room size %d\n", size);
-
-    // for(int i = 0; i < 4; i++){
-    //     Serial.printf("Search in Room %d\n", i + 1);
-    //     search_in_flash(test_source,table[i]);
-    // }
     
 }
 void uhf_read_user_data(){
