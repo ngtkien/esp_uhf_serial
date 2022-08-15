@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard - ESP32 BMS </title>
+    <title>Dashboard - BMS System </title>
     <!-- CSS files -->
     <link href="./styles.css" rel="stylesheet">
     <style type="text/css">
@@ -107,7 +107,7 @@
                 <div class="dropdown-menu show" data-bs-popper="none">
                   <div class="dropdown-menu-columns">
                     <div class="dropdown-menu-column">
-                      <a class="dropdown-item"> Empty page </a>
+                      <a class="dropdown-item"> Trang Chủ </a>
                     </div>
                   </div>
                 </div>
@@ -122,7 +122,7 @@
               </li>
               <li class="nav-item dropdown">
                 <div class="dropdown-menu show" data-bs-popper="none">
-                  <a class="dropdown-item"> Activity </a>
+                  <a class="dropdown-item"> Hoạt động </a>
                 </div>
               </li>
             </ul>
@@ -136,8 +136,8 @@
             <div class="row align-items-center">
               <div class="col">
                 <!-- Page pre-title -->
-                <div class="page-pretitle"> Overview </div>
-                <h2 class="page-title"> Demo ESP32 UHF </h2>
+                <!-- <div class="page-pretitle"> Overview </div> -->
+                <h2 class="page-title"> BMS  </h2>
               </div>
               <!-- Page title actions -->
               <div class="col-auto ms-auto d-print-none">
@@ -167,11 +167,11 @@
                       <span id="led_state">-</span>
                       <p><button id="button" class="button">Toggle</button></p>
 
-                      <p >Độ trễ: <span id="delay">-</span>giây</p>
+                      <!-- <p >Độ trễ: <span id="delay">-</span>giây</p>
                       Thiết lập độ trễ: 
                       <button style="position: relative; top: 34px; left: 0px;" id="delay_set" class="button">Set</button>
                       <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input" minlength="2" maxlength="2" size="5" > 
-                     
+                      -->
                     </div>
                   </div>
                 </div>
@@ -262,27 +262,38 @@
                 </div>
               </div>
               <div class="col-lg-6">
-                <div class="card">
-                  <div class="card-header border-0">
-                    <div class="card-title">Development activity</div>
-                  </div>
+                <div class="card" style="width: 150px;">
                   <div class="position-relative">
-                    <div class="position-absolute top-0 left-0 px-3 mt-1 w-75">
-                      <div class="row g-2"></div>
+                    <div class="card-body" style="min-height: 280px; "><h2 style="min-height: 40px;">Quản lý bộ nhớ</h2>
+                      
+                    
                     </div>
-                    <div id="chart-development-activity" style="min-height: 200px;">
-                      <div  style="width: 666px; height: 192px;">
-                        <div  style="max-height: 96px;"></div>
-                        <div style="left: 240.655px; top: 123.035px;">
-                          
-                        </div>
-                        <div>
-                          <div></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="resize-triggers"></div>
                   </div>
+                </div>
+              </div>
+              <div class="col-sm-5 col-lg-2">
+                <div class="card">
+                  <div class="card-body" style="min-height: 240px;"><h3 style="min-height: 40px;">Thiết lập độ trễ</h3>
+                    <p >Độ trễ 1: <span id="delay1">1</span>giây
+                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input1" minlength="2" maxlength="2" size="5"> 
+                      </p>
+                      <p >Độ trễ 2: <span id="delay2">2</span>giây
+                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input2" minlength="2" maxlength="2" size="5"> 
+                      </p>
+                      <p >Độ trễ 3: <span id="delay3">3</span>giây
+                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input3" minlength="2" maxlength="2" size="5"> 
+                      </p>
+                      <p >Độ trễ 4: <span id="delay4">4</span>giây
+                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input4" minlength="2" maxlength="2" size="5"> 
+                      </p>
+                      <p >Độ trễ 5: <span id="delay5">5</span>giây
+                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input5" minlength="2" maxlength="2" size="5"> 
+                      </p>
+                      <button style="position: relative; top: 10px; left: 10px;" id="delay_set" class="button">Set</button>
+                      <button style="position: relative; top: 10px; left: 10px;" id="delay_get" class="button">Get</button>
+                   
+                  </div>
+                
                 </div>
               </div>
               <div class="col-md-6 col-lg-4">
@@ -423,7 +434,6 @@
           document.getElementById('led_state').innerHTML = data.led_status;
           document.getElementById('gain').innerHTML = data.gain;
           document.getElementById("function").innerHTML = data.mode;
-          document.getElementById("delay").innerHTML = data.delay;
         }
         if(data.action == "led_toggle"){
   //Handle by key
@@ -436,7 +446,17 @@
           document.getElementById("function").innerHTML = data.mode;
         }
         if(data.action == "post_epc"){
-          document.getElementById("epc_tag").innerHTML = data.epc;
+          document.getElementById("epc_tag").value = data.epc;
+        }
+        if(data.action == "delay"){
+          
+        }
+        if(data.action ==  "delay_get"){
+          document.getElementById("delay1").innerHTML = data.value[0];
+          document.getElementById("delay2").innerHTML = data.value[1];
+          document.getElementById("delay3").innerHTML = data.value[2];
+          document.getElementById("delay4").innerHTML = data.value[3];
+          document.getElementById("delay5").innerHTML = data.value[4];
         }
       }
       function onLoad(event) {
@@ -451,6 +471,7 @@
         document.getElementById('btn_save').addEventListener('click', save_tags);
         document.getElementById('fn_normal').addEventListener('click', change_fn);
         document.getElementById('delay_set').addEventListener('click',delay_set);
+        document.getElementById('delay_get').addEventListener('click',delay_get);
       }
 
       //TODO: send backend -> toggle led
@@ -496,13 +517,29 @@
             return;
         }
         console.log("epc: " + epc + " storage: " + selectedValue);
-        websocket.send(JSON.stringify({'action':'save_tags','epc':epc,'room':selectedValue}));
+        websocket.send(JSON.stringify({'action':'save_tags','epc':epc,'room':parseInt(selectedValue)}));
       }
       function delay_set(){
-        let delay =  document.getElementById('delay_input');
-        var _value = delay.value;
-        document.getElementById("delay").innerHTML = _value;
-        websocket.send(JSON.stringify({'action':'delay','value':_value}));
+        
+        var delay1 =  document.getElementById('delay_input1').value;
+        var delay2 =  document.getElementById('delay_input2').value;
+        var delay3 =  document.getElementById('delay_input3').value;
+        var delay4 =  document.getElementById('delay_input4').value;
+        var delay5 =  document.getElementById('delay_input5').value;
+        const msg = {}; // Object
+        msg.action = 'delay';
+        msg.value = []; // Array
+        msg.value.push(parseInt(delay1));
+        msg.value.push(parseInt(delay2));
+        msg.value.push(parseInt(delay3));
+        msg.value.push(parseInt(delay4));
+        msg.value.push(parseInt(delay5));
+        const json = JSON.stringify(msg);
+        console.log(json);
+        websocket.send(json);
+      }
+      function delay_get(){
+        websocket.send(JSON.stringify({'action':'delay_get'}));
       }
     </script>
   </body>

@@ -1,5 +1,7 @@
 #include "Arduino.h"
 #include "WebServer.h"
+#include "esp_uhf.h"
+#include "strings.h"
 // Replace with your network credentials
 // Search for parameter in HTTP POST request
 const char* PARAM_INPUT_1 = "ssid";
@@ -45,7 +47,7 @@ const int ledPin = 2;
 // Stores LED state
 bool ledState = 0;
 uint8_t Gain = 15;
-uint8_t OpenDelay = 1;
+uint8_t delay1=1,delay2=2,delay3=3,delay4=4,delay5=5;
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 AsyncWebSocket  ws("/ws");
@@ -82,8 +84,59 @@ void mode_toggle(){
     ws.textAll(data, len);
 }
 
-
+int HexStringToBytes(const char *hexStr,
+                     unsigned char *output,
+                     unsigned int *outputLen) {
+  size_t len = strlen(hexStr);
+  if (len % 2 != 0) {
+    return -1;
+  }
+  size_t finalLen = len / 2;
+  *outputLen = finalLen;
+  for (size_t inIdx = 0, outIdx = 0; outIdx < finalLen; inIdx += 2, outIdx++) {
+    if ((hexStr[inIdx] - 48) <= 9 && (hexStr[inIdx + 1] - 48) <= 9) {
+      goto convert;
+    } else {
+      if ((hexStr[inIdx] - 65) <= 5 && (hexStr[inIdx + 1] - 65) <= 5) {
+        goto convert;
+      } else {
+        *outputLen = 0;
+        return -1;
+      }
+    }
+  convert:
+    output[outIdx] =
+        (hexStr[inIdx] % 32 + 9) % 25 * 16 + (hexStr[inIdx + 1] % 32 + 9) % 25;
+  }
+  output[finalLen] = '\0';
+  return 0;
+}
 //handle
+//TODO: save tags
+void hanle_save_tags(DynamicJsonDocument json){
+  
+  unsigned char* epc;
+  unsigned int _size;
+  String s_epc = json["epc"].as<String>();;
+  Serial.println("Crash ne" + s_epc);
+  HexStringToBytes(s_epc.c_str(),epc,&_size);
+  bool res;
+
+  for (int i = 0; i < _size; i++)
+  {
+      Serial.printf("%02X", epc[i], HEX);
+  }
+  // res =  eep_save_tags(json["room"].as<int>(), epc);
+
+  const uint8_t size = JSON_OBJECT_SIZE(2);
+  StaticJsonDocument<size> msg;
+  msg["action"] = "save_tags";
+  msg["status"] = res;
+  char data[100];
+  size_t len = serializeJson(msg, data);
+  Serial.printf("data send to web %s\n", data);
+  ws.textAll(data, len);
+}
 uint8_t get_gain(){
   return Gain;
 }
@@ -92,8 +145,26 @@ void set_gain_handle(DynamicJsonDocument json){
    Serial.printf("Set gain: %d", Gain);
 }
 void set_delay(DynamicJsonDocument json){
-   OpenDelay = json["value"].as<int>();
-   Serial.printf("Set OpenDelay: %d", OpenDelay);
+   delay1 = json["value"][0].as<int>();
+   delay2 = json["value"][1].as<int>();
+   delay3 = json["value"][2].as<int>();
+   delay4 = json["value"][3].as<int>();
+   delay5 = json["value"][4].as<int>();
+   Serial.printf("Set OpenDelay: %d %d %d %d %d", delay1, delay2, delay3, delay4, delay5);
+}
+void handle_get_delay(){
+    const uint8_t size = JSON_OBJECT_SIZE(7);
+    StaticJsonDocument<size> json;
+    json["action"] = "delay_get";
+    json["value"][0] = delay1;
+    json["value"][1] = delay2;
+    json["value"][2] = delay3;
+    json["value"][3] = delay4;
+    json["value"][4] = delay5;
+    char data[100];
+    size_t len = serializeJson(json, data);
+    Serial.printf("data send to web %s\n", data);
+    ws.textAll(data, len);
 }
 //message 
 void notify_led_msg(){
@@ -123,13 +194,11 @@ void notifyInit() {
     json["action"] = "init";
     json["led_status"] = ledState ? "ON" : "OFF";
     json["gain"] = Gain;
-    json["delay"] = OpenDelay;
+    json["delay"] = delay1;
     if(_mode == NORMAL){
-      _mode = SAVE_TAGS;
       json["mode"] = "Normal";
     }
     else {
-      _mode = NORMAL;
       json["mode"] = "Save";
     }
     char data[300];
@@ -180,12 +249,12 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
 
     // const uint8_t size = JSON_OBJECT_SIZE(1);
 
-        DynamicJsonDocument json(100);
+        DynamicJsonDocument json(200);
         // StaticJsonDocument<size> json;
         DeserializationError err = deserializeJson(json, data);
         if (err) {
             Serial.print(F("deserializeJson() failed with code "));
-            Serial.println(err.c_str());
+            Serial.println(err.f_str());
             return;
         }
 
@@ -207,6 +276,8 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         }
         else if(strcmp(action, "save_tags") == 0 ){
             Serial.printf("Save\n");
+            //TODO Save Tags
+            hanle_save_tags(json);
             //notifyMsg();
         }
         else if(strcmp(action, "change_mode") == 0){
@@ -216,6 +287,9 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         else if(strcmp(action, "delay") == 0){
             Serial.printf("mode set delay time\n");
             set_delay(json);
+        }
+        else if(strcmp(action, "delay_get") == 0){
+            handle_get_delay();
         }
   }
 }
@@ -232,7 +306,7 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
       Serial.printf("WebSocket client #%u disconnected\n", client->id());
       break;
     case WS_EVT_DATA:
-      Serial.printf("data from web %s\n", data);
+      Serial.printf("data from web %s, len = %d\n ", data,len);
       handleWebSocketMessage(arg, data, len);
       break;
     case WS_EVT_PONG:
@@ -377,7 +451,7 @@ void WebSetup(){
       server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(SPIFFS, "/wifimanager.html", "text/html");
       });
-      
+
       server.serveStatic("/", SPIFFS, "/");
       
       server.on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
@@ -420,7 +494,7 @@ void WebSetup(){
             //Serial.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
           }
         }
-        request->send(200, "text/plain", "Done. ESP will restart, connect to your router and go to IP address: " + ip);
+        request->send(200, "text/plain", "Cai dat xong. Vui long truy cap trang web chinh tai dia chi ip sau: " + ip);
         delay(3000);
         ESP.restart();
       });
