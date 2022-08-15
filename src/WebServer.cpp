@@ -84,49 +84,94 @@ void mode_toggle(){
     ws.textAll(data, len);
 }
 
-int HexStringToBytes(const char *hexStr,
-                     unsigned char *output,
-                     unsigned int *outputLen) {
-  size_t len = strlen(hexStr);
-  if (len % 2 != 0) {
-    return -1;
-  }
-  size_t finalLen = len / 2;
-  *outputLen = finalLen;
-  for (size_t inIdx = 0, outIdx = 0; outIdx < finalLen; inIdx += 2, outIdx++) {
-    if ((hexStr[inIdx] - 48) <= 9 && (hexStr[inIdx + 1] - 48) <= 9) {
-      goto convert;
-    } else {
-      if ((hexStr[inIdx] - 65) <= 5 && (hexStr[inIdx + 1] - 65) <= 5) {
-        goto convert;
-      } else {
-        *outputLen = 0;
-        return -1;
+byte nibble(char c)
+{
+  if (c >= '0' && c <= '9')
+    return c - '0';
+
+  if (c >= 'a' && c <= 'f')
+    return c - 'a' + 10;
+
+  if (c >= 'A' && c <= 'F')
+    return c - 'A' + 10;
+
+  return 0;  // Not a valid hexadecimal character
+}
+void hexCharacterStringToBytes(byte *byteArray, const char *hexString)
+{
+  bool oddLength = strlen(hexString) & 1;
+
+  byte currentByte = 0;
+  byte byteIndex = 0;
+
+  for (byte charIndex = 0; charIndex < strlen(hexString); charIndex++)
+  {
+    bool oddCharIndex = charIndex & 1;
+
+    if (oddLength)
+    {
+      // If the length is odd
+      if (oddCharIndex)
+      {
+        // odd characters go in high nibble
+        currentByte = nibble(hexString[charIndex]) << 4;
+      }
+      else
+      {
+        // Even characters go into low nibble
+        currentByte |= nibble(hexString[charIndex]);
+        byteArray[byteIndex++] = currentByte;
+        currentByte = 0;
       }
     }
-  convert:
-    output[outIdx] =
-        (hexStr[inIdx] % 32 + 9) % 25 * 16 + (hexStr[inIdx + 1] % 32 + 9) % 25;
+    else
+    {
+      // If the length is even
+      if (!oddCharIndex)
+      {
+        // Odd characters go into the high nibble
+        currentByte = nibble(hexString[charIndex]) << 4;
+      }
+      else
+      {
+        // Odd characters go into low nibble
+        currentByte |= nibble(hexString[charIndex]);
+        byteArray[byteIndex++] = currentByte;
+        currentByte = 0;
+      }
+    }
   }
-  output[finalLen] = '\0';
-  return 0;
 }
+
+void dumpByteArray(const byte * byteArray, const byte arraySize)
+{
+
+for (int i = 0; i < arraySize; i++)
+{
+  Serial.print("0x");
+  if (byteArray[i] < 0x10)
+    Serial.print("0");
+  Serial.print(byteArray[i], HEX);
+  Serial.print(", ");
+}
+Serial.println();
+}
+
+
 //handle
 //TODO: save tags
 void hanle_save_tags(DynamicJsonDocument json){
   
-  unsigned char* epc;
   unsigned int _size;
   String s_epc = json["epc"].as<String>();;
-  Serial.println("Crash ne" + s_epc);
-  HexStringToBytes(s_epc.c_str(),epc,&_size);
-  bool res;
+  Serial.println("Crash ne: " + s_epc);
+  
+  byte byteArray[12] = {0};
+  hexCharacterStringToBytes(byteArray, s_epc.c_str());
+  dumpByteArray(byteArray, 12);
 
-  for (int i = 0; i < _size; i++)
-  {
-      Serial.printf("%02X", epc[i], HEX);
-  }
-  // res =  eep_save_tags(json["room"].as<int>(), epc);
+  bool res;
+  res =  eep_save_tags(json["room"].as<int>(), byteArray);
 
   const uint8_t size = JSON_OBJECT_SIZE(2);
   StaticJsonDocument<size> msg;
