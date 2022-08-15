@@ -12,6 +12,9 @@
         "unordered_map": "cpp",
         "unordered_set": "cpp",
         "vector": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "*.tcc": "cpp",
+        "istream": "cpp",
+        "bitset": "cpp"
     }
 }

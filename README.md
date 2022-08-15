@@ -35,11 +35,15 @@ Number address: 0x1800
 | Page | Start Address  | End Adress  |  Size (byte)  |
 |------|----------------|------------ |---------------|
 |  9   |     0x180C     |   0x19FF    |     500       |
-|  10  |     0x2000     |   0x21FF    |     512       |
-|  11  |     0x2200     |   0x23FF    |     512       |
-
-
-# Page 12 - 14
+|  10  |     0x1A00     |   0x1BFF    |     512       |
+|  11  |     0x1C00     |   0x1DFF    |     512       |
+# Page 12 - 14 (Room 5)
+Number address: 0x1E00
+| Page | Start Address  | End Adress  |  Size (byte)  |
+|------|----------------|------------ |---------------|
+|  12   |     0x1E0C     |   0x1FFF    |     500       |
+|  13  |     0x2000     |   0x21FF    |     512       |
+|  14  |     0x2200     |   0x23FF    |     512       |
 # Page 15 - 17
 # Page 18 - 20
 # Page 21 - 23

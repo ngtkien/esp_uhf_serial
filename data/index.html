@@ -156,7 +156,7 @@
                       <div>
                         <!-- <p class="h2 mb-3 me-0" ></p>Board: <strong>ESP32 DevKit-C</strong> -->
                         <p class="h2 mb-3 me-0" ></p>Bộ nhớ: <strong>16MB</strong>
-                        <p class="h2 mb-3 me-0" ></p>Tổng số khay: <strong>10</strong> 
+                        <p class="h2 mb-3 me-0" ></p>Tổng số khay: <strong>5</strong> 
                       </div>
                     </div>
                   </div>
@@ -225,7 +225,7 @@
                         </div>
                         <div class="d-flex align-items-baseline" style="min-height: 290px;">
                           <form >
-                            <p><lable style="position:relative; left:30px; ">EPC Tags: <input class="input" type="text" id ="epc_tag" type="text" minlength="12" maxlength="12" size="30" name="epc_tag" style="position:relative; left: 30px; top:30px; "></lable></p>
+                            <p><lable style="position:relative; left:30px; ">EPC Tags: <input class="input" type="text" id ="epc_tag" type="text" minlength="24" maxlength="24" size="30" name="epc_tag" style="position:relative; left: 30px; top:30px; "></lable></p>
                             <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô lưu trữ:</label>
                             <select id="storage" style="position:relative;top:0px;left:80px; top: 30px">
                             <option value="selectcard">--- Vui lòng chọn ô ---</option>
@@ -234,11 +234,11 @@
                             <option value=3>3</option>
                             <option value=4>4</option>
                             <option value=5>5</option>
-                            <option value=6>6</option>
-                            <option value=7>7</option>z
+                            <!-- <option value=6>6</option>
+                            <option value=7>7</option>
                             <option value=8>8</option>
                             <option value=9>9</option>
-                            <option value=10>10</option>
+                            <option value=10>10</option> -->
                             </select>
                           </form><br>
                           <button id="btn_save" class="button" style="position: relative; top: 120px; right: 110px">Lưu</button>
@@ -419,6 +419,12 @@
         //parse data -> json
         let data = JSON.parse(event.data);
         console.log(data);
+        if(data.action == "init"){
+          document.getElementById('led_state').innerHTML = data.led_status;
+          document.getElementById('gain').innerHTML = data.gain;
+          document.getElementById("function").innerHTML = data.mode;
+          document.getElementById("delay").innerHTML = data.delay;
+        }
         if(data.action == "led_toggle"){
   //Handle by key
           document.getElementById('led_state').innerHTML = data.led_status;
@@ -429,7 +435,9 @@
         if(data.action == "change_mode"){
           document.getElementById("function").innerHTML = data.mode;
         }
-      
+        if(data.action == "post_epc"){
+          document.getElementById("epc_tag").innerHTML = data.epc;
+        }
       }
       function onLoad(event) {
         initWebSocket();
@@ -493,6 +501,7 @@
       function delay_set(){
         let delay =  document.getElementById('delay_input');
         var _value = delay.value;
+        document.getElementById("delay").innerHTML = _value;
         websocket.send(JSON.stringify({'action':'delay','value':_value}));
       }
     </script>

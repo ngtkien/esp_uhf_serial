@@ -10,3 +10,6 @@
 
 extern RFC_Class rfc;
 extern extEEPROM eep;         //device size, number of devices, page size
+
+
+bool eep_save_tags(uint8_t room_number, uint8_t epc[]);

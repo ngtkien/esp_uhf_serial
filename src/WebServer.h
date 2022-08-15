@@ -5,11 +5,16 @@
 #include "SPIFFS.h"
 #include "ArduinoJson.h"
 
+enum device_mote{
+  NORMAL = 0,
+  SAVE_TAGS
+};
 
 extern AsyncWebSocket  ws;
 // Set LED GPIO
 extern const int ledPin;
-
+extern uint8_t OpenDelay;
+extern device_mote  _mode;
 void WebSetup();
 
 
@@ -23,3 +28,5 @@ void set_gain_handle(DynamicJsonDocument json);
 void notify_led_msg();
 void notify_gain_msg();
 void notifyClients(String msg);
+void notifyInit();
+void notifyTags(uint8_t epc[12]);

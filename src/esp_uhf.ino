@@ -43,8 +43,9 @@ typedef enum {
   ROOM_2_ADDRESS = 0x60C,
   ROOM_3_ADDRESS = 0x120C,
   ROOM_4_ADDRESS = 0x180C,
+  ROOM_5_ADDRESS = 0x1E0C
 } ROOM_ADDR;
-#define ROOM_NUMBER 4
+#define ROOM_NUMBER 5
 #define ROOM_1_LENGTH_ADDR 0x0
 byte room1[10][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0xA8, 0x40},
@@ -87,7 +88,7 @@ byte room3[10][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x18}, //Real
 };
 #define ROOM_4_LENGTH_ADDR 0x1800
-
+#define ROOM_5_LENGTH_ADDR 0x1E00
 byte room4[10][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x30},
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x31},
@@ -101,7 +102,13 @@ byte room4[10][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x1B} //Real
 };
 
-ROOM_ADDR table[4] = {ROOM_ADDR::ROOM_1_ADDRESS, ROOM_ADDR::ROOM_2_ADDRESS, ROOM_ADDR::ROOM_3_ADDRESS, ROOM_ADDR::ROOM_4_ADDRESS};
+ROOM_ADDR table[5] = {
+    ROOM_ADDR::ROOM_1_ADDRESS, 
+    ROOM_ADDR::ROOM_2_ADDRESS, 
+    ROOM_ADDR::ROOM_3_ADDRESS, 
+    ROOM_ADDR::ROOM_4_ADDRESS,
+    ROOM_ADDR::ROOM_5_ADDRESS
+};
 byte test_source[12] = {0xE2,0x80,0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x18};
 byte data[12] = {0x0};
 
@@ -133,11 +140,16 @@ void onLed(ROOM_ADDR room){
         mux.write(HIGH, 4);
         /* code */
         break;
+    case ROOM_ADDR::ROOM_5_ADDRESS:
+        mux.write(LOW, 5);
+        delay(1000);
+        mux.write(HIGH, 5);
+        /* code */
+        break;
     default:
         break;
     }
 }
-
 void eeErase(uint8_t chunk, uint32_t startAddr, uint32_t endAddr)
 {
   chunk &= 0xFC;                //force chunk to be a multiple of 4
@@ -159,40 +171,89 @@ void test_write(){
     Serial.println("TEST WRITE");
 
 
-    eep.write(ROOM_1_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
-    eep.write(ROOM_1_LENGTH_ADDR ,  0x00);
-    uint32_t index = ROOM_ADDR::ROOM_1_ADDRESS;
-    for(uint8_t i = 0; i < 10; i++){
-        Serial.printf("Write at: 0x%04x", index);
-        eep.write(index,room1[i],12);
-        index = index + 12;
-    }
+    // // eep.write(ROOM_1_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
+    // // eep.write(ROOM_1_LENGTH_ADDR ,  0x00);
+    uint32_t index;
+    // for(uint8_t i = 0; i < 10; i++){
+    //     Serial.printf("Write at: 0x%04x\n", index);
+    //     // eep.write(index,room1[i],12);
+    //     index = index + 12;
+    // }
 
 
-    eep.write(ROOM_2_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
-    eep.write(ROOM_2_LENGTH_ADDR ,  0x00);
-    index = ROOM_ADDR::ROOM_2_ADDRESS;
-    for(uint8_t i = 0; i < 10; i++){
-        Serial.printf("Write at: 0x%04x", index);
-        eep.write(index,room2[i],12);
-        index = index + 12;
-    }
-    eep.write(ROOM_3_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
-    eep.write(ROOM_3_LENGTH_ADDR ,  0x00);
-    index = ROOM_ADDR::ROOM_3_ADDRESS;
-    for(uint8_t i = 0; i < 10; i++){
-        Serial.printf("Write at: 0x%04x", index);
-        eep.write(index,room3[i],12);
-        index = index + 12;
-    }
-    eep.write(ROOM_4_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
-    eep.write(ROOM_4_LENGTH_ADDR ,  0x00);
+    // // eep.write(ROOM_2_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
+    // // eep.write(ROOM_2_LENGTH_ADDR ,  0x00);
+    // index = ROOM_ADDR::ROOM_2_ADDRESS;
+    // for(uint8_t i = 0; i < 10; i++){
+    //     Serial.printf("Write at: 0x%04x\n", index);
+    //     eep.write(index,room2[i],12);
+    //     index = index + 12;
+    // }
+    // // eep.write(ROOM_3_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
+    // // eep.write(ROOM_3_LENGTH_ADDR ,  0x00);
+    // index = ROOM_ADDR::ROOM_3_ADDRESS;
+    // for(uint8_t i = 0; i < 10; i++){
+    //     Serial.printf("Write at: 0x%04x\n", index);
+    //     // eep.write(index,room3[i],12);
+    //     index = index + 12;
+    // }
+    // // eep.write(ROOM_4_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
+    // // eep.write(ROOM_4_LENGTH_ADDR ,  0x00);
+    // index = ROOM_ADDR::ROOM_4_ADDRESS;
+    // for(uint8_t i = 0; i < 10; i++){
+    //     Serial.printf("Write at: 0x%04x\n", index);
+    //     // eep.write(index,room4[i],12);
+    //     index = index + 12;
+    // }
+    Serial.println("Room 5-1\n");
     index = ROOM_ADDR::ROOM_4_ADDRESS;
     for(uint8_t i = 0; i < 10; i++){
-        Serial.printf("Write at: 0x%04x", index);
-        eep.write(index,room4[i],12);
+        Serial.printf("Write at: 0x%04x\n", index);
+        // eep.write(index,room4[i],12);
         index = index + 12;
+        //
+
     }
+
+    Serial.println("Write in B");
+    index = ROOM_ADDR::ROOM_4_ADDRESS;
+    for(uint8_t i = 0; i < 0x0B; i++){
+        Serial.printf("Write at: 0x%04x\n", index);
+        if(i == 0x0B-1){
+           Serial.printf("Write at B: 0x%04x\n", index);
+        }
+        // eep.write(index,room4[i],12);
+        index = index + 12;
+
+    }
+    ROOM_ADDR room = table[4];
+    uint16_t size = 0x0A;
+    uint32_t index2 = room + size*12;
+     Serial.printf("Write add 0x%04x ",index2);
+
+     increase_size_room(room);
+}
+bool eep_save_tags(uint8_t room_number, uint8_t epc[]){
+
+    if(find_in_epc_list(epc)){
+        Serial.println("Tags exists");
+        return false;
+    }
+    if(room_number >= 5){
+        Serial.println("Room not exists");
+        return false;
+    }
+    //Get room_number -> room address and room length
+    //Calculator index 
+    ROOM_ADDR room = table[room_number];
+    uint16_t size = get_size_room(room);
+    uint32_t index = room + size*12;
+    
+    //TODO: Write in the next last index
+    eep.write(index,epc,12);
+    //TODO: Increse length
+    increase_size_room(room);
+    return true;
 }
 void test_eeprom(){
     
@@ -253,6 +314,7 @@ bool compare(uint8_t input[], uint8_t source[]){
     
     return true;
 }
+
 uint16_t get_size_room(ROOM_ADDR room){
     uint16_t lsb = 0,msb = 0;
     uint16_t size;
@@ -275,13 +337,56 @@ uint16_t get_size_room(ROOM_ADDR room){
         lsb = eep.read(ROOM_4_LENGTH_ADDR + 1);
         msb = eep.read(ROOM_4_LENGTH_ADDR);
         break;
+    case ROOM_ADDR::ROOM_5_ADDRESS:
+        lsb = eep.read(ROOM_5_LENGTH_ADDR + 1);
+        msb = eep.read(ROOM_5_LENGTH_ADDR);
+        break;
     default:
         Serial.println("ROOM Address not exist");
         break;
     }
     size = ( (msb & 0xFF) << 8 ) | (lsb & 0x00FF);
+    if(size == 0xFFFF) size = 0;
     Serial.printf("Number of tag store in ROOM %d\n", size);
     return size;
+}
+void increase_size_room(ROOM_ADDR room){
+    uint16_t size;
+    uint16_t lsb = 0,msb = 0;
+    size = get_size_room(room);
+    
+    size = size + 1; //0x00 00
+    
+    lsb = size & 0xFF;
+    msb = (size & 0xFF00) >> 8;
+    Serial.printf("Size  %d lsb: 0x%02x msb: 0x%02x\n", size,lsb,msb);
+    switch (room)
+    {
+    case ROOM_ADDR::ROOM_1_ADDRESS:
+        eep.write(ROOM_1_LENGTH_ADDR + 1,lsb);
+        eep.write(ROOM_1_LENGTH_ADDR, msb);
+        /* code */
+        break;
+    case ROOM_ADDR::ROOM_2_ADDRESS:
+        eep.write(ROOM_2_LENGTH_ADDR + 1,lsb);
+        eep.write(ROOM_2_LENGTH_ADDR, msb);
+        break;
+    case ROOM_ADDR::ROOM_3_ADDRESS:
+        eep.write(ROOM_3_LENGTH_ADDR + 1,lsb);
+        eep.write(ROOM_3_LENGTH_ADDR, msb);
+        break;
+    case ROOM_ADDR::ROOM_4_ADDRESS:
+        eep.write(ROOM_4_LENGTH_ADDR + 1,lsb);
+        eep.write(ROOM_4_LENGTH_ADDR, msb);
+        break;
+    case ROOM_ADDR::ROOM_5_ADDRESS:
+        eep.write(ROOM_5_LENGTH_ADDR + 1,lsb);
+        eep.write(ROOM_5_LENGTH_ADDR, msb);
+        break;
+    default:
+        Serial.println("ROOM Address not exist");
+        break;
+    }
 }
 bool search_by_address(byte input[], uint32_t startAddr, uint8_t num_of_search){
     byte _data[12] = {0x0};
@@ -360,7 +465,7 @@ byte controlPins[] = {B00000000,
 void setup()
 {
     
-
+    
     SerialRF.begin(115200, SERIAL_8N1,16,17);
     Serial.begin(115200);
 
@@ -373,35 +478,13 @@ void setup()
     else {
       Serial.println("Access to SPIFFS success");
     }
-    WiFi.mode(WIFI_AP_STA);
-  /* start SmartConfig */
-    WiFi.beginSmartConfig();
- 
-    /* Wait for SmartConfig packet from mobile */
-    Serial.println("Waiting for SmartConfig.");
-    while (!WiFi.smartConfigDone()) {
-      delay(500);
-      Serial.print(".");
-    }
-    Serial.println("");
-    Serial.println("SmartConfig done.");
- 
-    /* Wait for WiFi to connect to AP */
-    Serial.println("Waiting for WiFi");
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("WiFi Connected.");
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
-    //WebSetUp
+    
     WebSetup();
 
     rfc.begin();
     flashInit();
 
-    
+    // test_write();
 }
 void uhf_read_user_data(){
     
@@ -417,18 +500,26 @@ void uhf_process(){
             Serial.printf("%02X", label.epc[i], HEX);
         }
         Serial.println();
-       // find_in_epc_list(label.epc);
-        bool res = false;
-        for(int i = 0; i < 4; i++){
+
+        if(_mode == NORMAL){
+            //Mode normal
+            bool res = false;
+            for(int i = 0; i < 4; i++){
             res = search_in_flash(label.epc,table[i]);
             if(res) {
                 Serial.printf("Find it in Room address 0x%04X\n", table[i]);
                 //TODO: On Relay 
                 //
+                delay(OpenDelay*1000);
                 onLed(table[i]);
                 break;
             }
         }
+        }
+        else if(_mode == SAVE_TAGS){
+            notifyTags(label.epc);
+        }
+        
     }
     else
     {
@@ -439,10 +530,10 @@ void uhf_process(){
 void loop()
 {
 
-  delay(300);
+    delay(300);
     //delay(500);
     
-uhf_process();
+    uhf_process();
 
 }
 
