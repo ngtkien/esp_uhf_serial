@@ -242,7 +242,136 @@ uint16_t RFC_Class::GetPaPowerFrame()
     }
     return power.PaPower();
 }
+RFC_Class::PaPower RFC_Class::GetPaPowerLevelFrame(){
+    RFC_Class::PaPower pwer = G_2250;
+    SendFrame(BuildFrame(0X00, 0XB7));
+    if (!waitAckDone())
+    {
+        Serial.println("Error : No Data.");
+        return RFC_Class::PaPower::G_2250;
+    }
+    uint32_t Millis = millis();
+    while (!power.isUpdated())
+    {
+        if (millis() - Millis > 100)
+            return RFC_Class::PaPower::G_2250;
+    }
+    switch (power.PaPower())
+    {
+    case 2600:
+        /* code */
+        pwer = G_2600;
+        break;
+    case 2500:
+        /* code */
+        pwer = G_2500;
+        break;
+    case 2250:
+        /* code */
+        pwer = G_2250;
+        break;
+    case 2000:
+        pwer = G_2000;
+        /* code */
+        break;
+    case 1850:
+        pwer = G_1850;
+        /* code */
+        break;
+    case 1700:
+        /* code */
+        pwer = G_1700;
+        break;
+    case 1550:
+        /* code */
+        pwer = G_1550;
+        break;
+    case 1400:
+        /* code */
+        pwer = G_1400;
+        break;
+    case 1250:
+        /* code */
+        pwer = G_1250;
+        break;    
+    default:
+        pwer = G_2250;
+        break;
+    }
+    return pwer;
+}
+bool RFC_Class::SetPaPowerFrame(PaPower pow)
+{
+    uint8_t data[2];
 
+    switch (pow)
+    {
+    case G_2600:
+    //2800
+        data[0] = 0x0A;
+        data[1] = 0x28;
+        break;
+    case G_2500:
+    //2500
+        Serial.println("Level 1");
+        data[0] = 0x09;
+        data[1] = 0xC4;
+        break;
+    case G_2250:
+    //2250
+        data[0] = 0x08;
+        data[1] = 0xCA;
+        break;
+    case G_2000:
+    //2000
+        data[0] = 0x07;
+        data[1] = 0xD0;
+        break;
+    case G_1850:
+    //1850
+        data[0] = 0x07;
+        data[1] = 0x3A;
+        break;
+    case G_1700:
+    //1700
+        data[0] = 0x06;
+        data[1] = 0xA4;
+        break;
+    case G_1550:
+    //1550
+        data[0] = 0x06;
+        data[1] = 0x0E;
+        break;
+    case G_1400:
+    //1400
+        data[0] = 0x05;
+        data[1] = 0x78;
+        break;
+    case G_1250:
+    //1250
+        data[0] = 0x04;
+        data[1] = 0xE2;
+        break;
+    default:
+        data[0] = 0x07;
+        data[1] = 0xD0;
+        break;
+    }
+    SendFrame(BuildFrame(0X00, 0XB6, 2, data));
+    if (!waitAckDone())
+    {
+        Serial.println("Error : No Data.");
+        return 0;
+    }
+    uint32_t Millis = millis();
+    while (!power.isUpdated())
+    {
+        if (millis() - Millis > 100)
+            return false;
+    }
+    Serial.println("Set PaPower Ok");
+    return power.isValid();
+}
 bool RFC_Class::SetPaPowerFrame(uint8_t pow)
 {
     uint8_t data[2];
@@ -291,6 +420,7 @@ bool RFC_Class::SetPaPowerFrame(uint8_t pow)
     }
     return power.isValid();
 }
+
 
 uint16_t RFC_Class::GetQueryFrame()
 {

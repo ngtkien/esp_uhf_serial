@@ -453,6 +453,17 @@ private:
     char rxbuf[50];
 
 public:
+    enum PaPower {
+        G_2600 = 0,
+        G_2500,
+        G_2250,
+        G_2000,
+        G_1850,
+        G_1700,
+        G_1550,
+        G_1400,
+        G_1250
+    };
     RFC_Class(HardwareSerial *Serial) { _serial = Serial; };
     ~RFC_Class(){};
 
@@ -477,6 +488,7 @@ public:
     Inventory_t GetLabelOnce();
     String GetModuleInfoFrame(uint8_t infoType);
     uint16_t GetPaPowerFrame();
+    PaPower GetPaPowerLevelFrame();
     uint16_t GetQueryFrame();
     uint8_t GetRegionFrame();
     uint8_t GetRfChannelFrame();
@@ -498,6 +510,7 @@ public:
     bool SetComTransmitContinuousCarrier(bool enable);
     bool SetComIO(uint8_t p1, uint8_t p2, uint8_t p3);
 
+    bool SetPaPowerFrame(PaPower pow);
     bool SetPaPowerFrame(uint8_t pow);
     bool SetQueryFrame(uint16_t para);
     bool SetRegionFrame(uint8_t reg);

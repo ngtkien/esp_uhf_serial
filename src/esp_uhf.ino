@@ -9,6 +9,7 @@
 // #include "WebServer.h"
 using namespace admux;
 
+#define ROOM_SIZE 5
 /*
  * Creates a Mux instance.
  *
@@ -29,7 +30,7 @@ HardwareSerial SerialRF(2);
 RFC_Class rfc(&SerialRF);
 const uint32_t totalKBytes = 32;         //for read and write test functions
 extEEPROM eep(kbits_256, 1, 64);         //device size, number of devices, page size
-
+extern uint8_t Gain;
 #define RFIDEN 14
 byte epc_list[4][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0xA8, 0x4B},
@@ -93,7 +94,7 @@ byte room4[10][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x1B} //Real
 };
 
-ROOM_ADDR table[5] = {
+ROOM_ADDR table[ROOM_SIZE] = {
     ROOM_ADDR::ROOM_1_ADDRESS, 
     ROOM_ADDR::ROOM_2_ADDRESS, 
     ROOM_ADDR::ROOM_3_ADDRESS, 
@@ -170,37 +171,7 @@ void test_write(){
     // // eep.write(ROOM_1_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
     // // eep.write(ROOM_1_LENGTH_ADDR ,  0x00);
     uint32_t index;
-    // for(uint8_t i = 0; i < 10; i++){
-    //     Serial.printf("Write at: 0x%04x\n", index);
-    //     // eep.write(index,room1[i],12);
-    //     index = index + 12;
-    // }
 
-
-    // // eep.write(ROOM_2_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
-    // // eep.write(ROOM_2_LENGTH_ADDR ,  0x00);
-    // index = ROOM_ADDR::ROOM_2_ADDRESS;
-    // for(uint8_t i = 0; i < 10; i++){
-    //     Serial.printf("Write at: 0x%04x\n", index);
-    //     eep.write(index,room2[i],12);
-    //     index = index + 12;
-    // }
-    // // eep.write(ROOM_3_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
-    // // eep.write(ROOM_3_LENGTH_ADDR ,  0x00);
-    // index = ROOM_ADDR::ROOM_3_ADDRESS;
-    // for(uint8_t i = 0; i < 10; i++){
-    //     Serial.printf("Write at: 0x%04x\n", index);
-    //     // eep.write(index,room3[i],12);
-    //     index = index + 12;
-    // }
-    // // eep.write(ROOM_4_LENGTH_ADDR + 1 ,  0x0A); //=> 0x000A
-    // // eep.write(ROOM_4_LENGTH_ADDR ,  0x00);
-    // index = ROOM_ADDR::ROOM_4_ADDRESS;
-    // for(uint8_t i = 0; i < 10; i++){
-    //     Serial.printf("Write at: 0x%04x\n", index);
-    //     // eep.write(index,room4[i],12);
-    //     index = index + 12;
-    // }
     Serial.println("Room 5-1\n");
     index = ROOM_ADDR::ROOM_4_ADDRESS;
     for(uint8_t i = 0; i < 10; i++){
@@ -231,9 +202,12 @@ void test_write(){
 }
 bool eep_save_tags(uint8_t room_number, uint8_t epc[]){
 
-    if(find_in_epc_list(epc)){
-        Serial.println("Tags exists");
-        return false;
+    for(int i = 0; i < 5; i++){
+        bool res = search_in_flash(epc,table[i]);
+        if(res) {
+            Serial.printf("Find it in Room address 0x%04X\n", table[i]);
+            return false;
+        }
     }
     if(room_number >= 5){
         Serial.println("Room not exists");
@@ -285,7 +259,7 @@ void test_eeprom(){
     Serial.println();
 }
 bool find_in_epc_list(uint8_t input[]){
-    for(int i = 0; i < 4 ; i++){
+    for(int i = 0; i < ROOM_SIZE ; i++){
         if(compare(input, epc_list[i])){
             Serial.println("Find in list \n");
             return true;
@@ -421,6 +395,8 @@ bool search_in_flash(uint8_t input[], ROOM_ADDR room){
         break;
     case ROOM_ADDR::ROOM_4_ADDRESS:
         result = search_by_address(input, ROOM_ADDR::ROOM_4_ADDRESS,num_of_search);
+    case ROOM_ADDR::ROOM_5_ADDRESS:
+        result = search_by_address(input, ROOM_ADDR::ROOM_5_ADDRESS,num_of_search);    
         break;
     default:
         break;
@@ -478,6 +454,9 @@ void setup()
     WebSetup();
 
     rfc.begin();
+    
+    Gain = rfc.GetPaPowerLevelFrame();
+    Serial.printf("Power Level: %d\n", Gain);
     flashInit();
 
     // test_write();
@@ -501,16 +480,16 @@ void uhf_process(){
             //Mode normal
             bool res = false;
             for(int i = 0; i < 5; i++){
-            res = search_in_flash(label.epc,table[i]);
-            if(res) {
-                Serial.printf("Find it in Room address 0x%04X\n", table[i]);
-                //TODO: On Relay 
-                //
+                res = search_in_flash(label.epc,table[i]);
+                if(res) {
+                    Serial.printf("Find it in Room address 0x%04X\n", table[i]);
+                    //TODO: On Relay 
+                    //
                
-                onLed(table[i]);
-                break;
+                    onLed(table[i]);
+                    break;
+                }
             }
-        }
         }
         else if(_mode == SAVE_TAGS){
             notifyTags(label.epc);

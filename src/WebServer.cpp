@@ -46,7 +46,7 @@ const int ledPin = 2;
 
 // Stores LED state
 bool ledState = 0;
-uint8_t Gain = 15;
+RFC_Class::PaPower Gain = RFC_Class::PaPower::G_1550;
 uint8_t delay1=1,delay2=2,delay3=3,delay4=4,delay5=5;
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -186,8 +186,11 @@ uint8_t get_gain(){
   return Gain;
 }
 void set_gain_handle(DynamicJsonDocument json){
-   Gain  = json["gain"].as<int>();
+   Gain = (RFC_Class::PaPower)json["gain"].as<int>();
    Serial.printf("Set gain: %d", Gain);
+   rfc.SetPaPowerFrame(Gain);
+   uint16_t _Gain = rfc.GetPaPowerFrame();
+   Serial.printf("Power: %d\n", _Gain);
 }
 void set_delay(DynamicJsonDocument json){
    delay1 = json["value"][0].as<int>();

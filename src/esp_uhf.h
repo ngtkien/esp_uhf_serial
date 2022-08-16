@@ -26,3 +26,4 @@ extern extEEPROM eep;         //device size, number of devices, page size
 
 
 bool eep_save_tags(uint8_t room_number, uint8_t epc[]);
+bool search_in_flash(uint8_t input[], ROOM_ADDR room);

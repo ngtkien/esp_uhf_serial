@@ -155,13 +155,13 @@
                     <div class="d-flex align-items-baseline">
                       <div>
                         <!-- <p class="h2 mb-3 me-0" ></p>Board: <strong>ESP32 DevKit-C</strong> -->
-                        <p class="h2 mb-3 me-0" ></p>Bộ nhớ: <strong>16MB</strong>
-                        <p class="h2 mb-3 me-0" ></p>Tổng số khay: <strong>5</strong> 
+                        <p class="h2 mb-2 me-0" ></p>Bộ nhớ: <strong>16MB</strong>
+                        <p class="h2 mb-2 me-0" ></p>Tổng số khay: <strong>5</strong> 
                       </div>
                     </div>
                   </div>
                   <div class="card-body" style="min-height: 240px;"><h2 style="min-height: 40px;">Thiết lập thiết bị</h2>
-                    <div class="ms-2 d-inline-block">
+                    <div class="ms-5 d-inline-block">
 
                       <h4>LED State </h2>
                       <span id="led_state">-</span>
@@ -183,19 +183,22 @@
                     </div>
                     <div class="d-flex align-items-baseline">
                       <div class="h4 mb-3 me-2">
-                        <p style="position:relative; left:30px; ">Độ lợi Ăn-ten: <strong><span id="gain">-</span>dB</strong></p>
+                        <p style="position:relative; left:30px; ">Mức Độ lợi Ăn-ten: <strong><span id="gain">-</span></strong></p>
                         <button id="button_pow" class="button" style="position: relative; left:100px ">Get</button>
                         <form>
                           <p><label style="position:relative; left:30px; top: 20px;"><strong>Thiết lập độ lợi:</strong></label></p>
                           <select style="position:relative; left:55px; top: 20px" id="gain_set">
                           <option value="selectcard">--- Vui lòng chọn ---</option>
-                          <option value=20>20</option>
-                          <option value=21>21</option>
-                          <option value=22>22</option>
-                          <option value=23>23</option>
-                          <option value=24>24</option>
-                          <option value=25>25</option>
-                          <option value=26>26</option>
+                          <option value=0>0</option>
+                          <option value=1>1</option>
+                          <option value=2>2</option>
+                          <option value=3>3</option>
+                          <option value=4>4</option>
+                          <option value=5>5</option>
+                          <option value=6>6</option>
+                          <option value=7>7</option>
+                          <option value=8>8</option>
+                          <option value=9>9</option>
                           </select>
                         </form>
                         <button style="position: relative; top: 40px; left:60%" id="set_pow" class="button">Set</button>
@@ -219,7 +222,7 @@
               <div class="col-lg-6">
                 <div class="row row-cards">
                   <div class="col-12">
-                    <div class="card">
+                    <a class="card card-sponsor target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
                       <div class="card-body" style="position: relative;">
                         <div class="d-flex align-items-center"><h3>Thao Tác Thẻ</h3>
                         </div>
@@ -244,61 +247,64 @@
                           <button id="btn_save" class="button" style="position: relative; top: 120px; right: 110px">Lưu</button>
                         </div>
                       </div>
-                    </div>
+                    </a>
                   </div>
                   <div class="col-12">
                     <div class="card">
-                      <div class="card-body">
-                        <div class="d-flex align-items-center"><h3>Quản lý bộ nhớ</h3>
+                      <a class="card card-sponsor target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
+                        <div class="d-flex align-items-center"><h3></h3>
                           
                         </div>
                         <div class="d-flex align-items-baseline" style="min-height: 100px;">
 
                         </div>
                       
-                      </div>
+                      </a>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="col-lg-6">
-                <div class="card" style="width: 150px;">
+                <a class="card card-sponsor target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
                   <div class="position-relative">
                     <div class="card-body" style="min-height: 280px; "><h2 style="min-height: 40px;">Quản lý bộ nhớ</h2>
                       
                     
                     </div>
                   </div>
-                </div>
+                </a>
               </div>
               <div class="col-sm-5 col-lg-2">
-                <div class="card">
-                  <div class="card-body" style="min-height: 240px;"><h3 style="min-height: 40px;">Thiết lập độ trễ</h3>
-                    <p >Độ trễ 1: <span id="delay1">1</span>giây
-                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input1" minlength="2" maxlength="2" size="5"> 
-                      </p>
-                      <p >Độ trễ 2: <span id="delay2">2</span>giây
-                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input2" minlength="2" maxlength="2" size="5"> 
-                      </p>
-                      <p >Độ trễ 3: <span id="delay3">3</span>giây
-                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input3" minlength="2" maxlength="2" size="5"> 
-                      </p>
-                      <p >Độ trễ 4: <span id="delay4">4</span>giây
-                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input4" minlength="2" maxlength="2" size="5"> 
-                      </p>
-                      <p >Độ trễ 5: <span id="delay5">5</span>giây
-                      <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input5" minlength="2" maxlength="2" size="5"> 
-                      </p>
-                      <button style="position: relative; top: 10px; left: 10px;" id="delay_set" class="button">Set</button>
-                      <button style="position: relative; top: 10px; left: 10px;" id="delay_get" class="button">Get</button>
-                   
+                <a class="card card-sponsor target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
+                  <div class="card-body " style=" min-height: 240px;"><h3 style="min-height: 40px;">Thiết lập độ trễ</h3>
+                      <center>
+                        <p>Độ trễ 1: <span id="delay1">1</span>giây
+                          <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input1" minlength="2" maxlength="2" size="5"> 
+                          </p>
+                          <p >Độ trễ 2: <span id="delay2">2</span>giây
+                          <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input2" minlength="2" maxlength="2" size="5"> 
+                          </p>
+                          <p >Độ trễ 3: <span id="delay3">3</span>giây
+                          <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input3" minlength="2" maxlength="2" size="5"> 
+                          </p>
+                          <p >Độ trễ 4: <span id="delay4">4</span>giây
+                          <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input4" minlength="2" maxlength="2" size="5"> 
+                          </p>
+                          <p >Độ trễ 5: <span id="delay5">5</span>giây
+                          <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input5" minlength="2" maxlength="2" size="5"> 
+                          </p>
+                          <button style="position: relative; top: 10px; left: 10px;" id="delay_set" class="button">Set</button>
+                          <button style="position: relative; top: 10px; left: 10px;" id="delay_get" class="button">Get</button>
+                        </p>
+                      </center>
                   </div>
-                
-                </div>
+                </a>
               </div>
               <div class="col-md-6 col-lg-4">
                 <a class="card card-sponsor" target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
-                  <div class="card-body"></div>
+                  <div class="card-body">
+                    
+                  </div>
                 </a>
               </div>
             </div>
@@ -457,6 +463,14 @@
           document.getElementById("delay3").innerHTML = data.value[2];
           document.getElementById("delay4").innerHTML = data.value[3];
           document.getElementById("delay5").innerHTML = data.value[4];
+        }
+        if(data.action == "save_tags"){
+          if(data.status){
+            alert("Ghi thanh cong");
+          }
+          else {
+            alert("Ghi khong thanh cong\n The bi trung");
+          }
         }
       }
       function onLoad(event) {
