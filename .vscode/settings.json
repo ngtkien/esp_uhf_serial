@@ -15,6 +15,7 @@
         "regex": "cpp",
         "*.tcc": "cpp",
         "istream": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "random": "cpp"
     }
 }

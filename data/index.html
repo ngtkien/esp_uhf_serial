@@ -242,6 +242,7 @@
                             <option value=8>8</option>
                             <option value=9>9</option>
                             <option value=10>10</option> -->
+                            
                             </select>
                           </form><br>
                           <button id="btn_save" class="button" style="position: relative; top: 120px; right: 110px">Lưu</button>
@@ -269,7 +270,41 @@
                   <div class="position-relative">
                     <div class="card-body" style="min-height: 280px; "><h2 style="min-height: 40px;">Quản lý bộ nhớ</h2>
                       
-                    
+                      <div class="d-flex align-items-baseline" style="min-height: 150px;">
+                        <form >
+                          <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô cần xóa:</label>
+                          <select id="erase_storage" style="position:relative;top:0px;left:80px; top: 30px">
+                          <option value="selectcard">--- Vui lòng chọn ô ---</option>
+                          <option value=1>1</option>
+                          <option value=2>2</option>
+                          <option value=3>3</option>
+                          <option value=4>4</option>
+                          <option value=5>5</option>
+                          </select>
+                         </form>
+                         <button id="btn_erase" class="button" style="position: relative; top: 80px; right: 110px">Xóa ô nhớ</button>
+                      </div>  
+                      <div class="d-flex align-items-baseline" style="min-height: 150px;">
+                        
+                         
+                         <form >
+                          <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô nhớ cần xem số lượng:</label>
+                          <select id="get_storage" style="position:relative;top:0px;left:80px; top: 30px">
+                            <option value="selectcard">--- Vui lòng chọn ô ---</option>
+                            <option value=1>1</option>
+                            <option value=2>2</option>
+                            <option value=3>3</option>
+                            <option value=4>4</option>
+                            <option value=5>5</option>
+                          </select>
+                          </form><br>
+                          
+                          <label>
+                            <input class="input" type="text" id ="storage_size" type="text" minlength="12" maxlength="12" size="12" style="position:relative; left:-80px; top:80px; ">
+                          </label>
+                          <button id="btn_get_storage" class="button" style="position: relative; top: 120px; left:-50px">Kiểm tra</button>
+                          
+                      </div>  
                     </div>
                   </div>
                 </a>
@@ -472,6 +507,17 @@
             alert("Ghi khong thanh cong\n The bi trung");
           }
         }
+        if(data.action == "erase" ){
+          if(data.status){
+            alert("Xoa  thanh cong");
+          }
+          else {
+            alert("Xoa khong thanh cong");
+          }
+        }
+        if(data.action == "get_storage"){
+          document.getElementById("storage_size").value = data.size;
+        }
       }
       function onLoad(event) {
         initWebSocket();
@@ -486,6 +532,8 @@
         document.getElementById('fn_normal').addEventListener('click', change_fn);
         document.getElementById('delay_set').addEventListener('click',delay_set);
         document.getElementById('delay_get').addEventListener('click',delay_get);
+        document.getElementById('btn_erase').addEventListener('click',erase_strage_fn);
+        document.getElementById('btn_get_storage').addEventListener('click',get_strage_fn);
       }
 
       //TODO: send backend -> toggle led
@@ -554,6 +602,29 @@
       }
       function delay_get(){
         websocket.send(JSON.stringify({'action':'delay_get'}));
+      }
+      function erase_strage_fn(){
+        let er_store =  document.getElementById('erase_storage');
+        var selectedValue = er_store.options[er_store.selectedIndex].value;
+        if (selectedValue == "selectcard" )
+        {
+            alert("Chọn ô nhớ cần xóa");
+            return;
+        }
+        console.log("erase storage: " + selectedValue);
+        websocket.send(JSON.stringify({'action':'erase','room':parseInt(selectedValue)}));
+      
+      }
+      function get_strage_fn(){
+        let er_store =  document.getElementById('get_storage');
+        var selectedValue = er_store.options[er_store.selectedIndex].value;
+        if (selectedValue == "selectcard" )
+        {
+            alert("Chọn ô nhớ cần xem");
+            return;
+        }
+        console.log("get_storage: " + selectedValue);
+        websocket.send(JSON.stringify({'action':'get_storage','room':parseInt(selectedValue)}));
       }
     </script>
   </body>

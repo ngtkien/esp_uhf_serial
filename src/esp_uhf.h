@@ -24,6 +24,7 @@ typedef enum {
 extern RFC_Class rfc;
 extern extEEPROM eep;         //device size, number of devices, page size
 
-
 bool eep_save_tags(uint8_t room_number, uint8_t epc[]);
 bool search_in_flash(uint8_t input[], ROOM_ADDR room);
+uint16_t get_size_room(ROOM_ADDR room);
+bool eep_erase_room(uint8_t index);

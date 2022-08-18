@@ -209,16 +209,22 @@ bool eep_save_tags(uint8_t room_number, uint8_t epc[]){
             return false;
         }
     }
-    if(room_number >= 5){
+    if(room_number > 5){
         Serial.println("Room not exists");
         return false;
     }
     //Get room_number -> room address and room length
     //Calculator index 
-    ROOM_ADDR room = table[room_number];
+    ROOM_ADDR room = table[room_number-1];
     uint16_t size = get_size_room(room);
-    uint32_t index = room + size*12;
-    
+    uint32_t index = 0;
+    if(size == 0){
+        index = room + 12;
+    }
+    else {
+        index = room + size*12;
+    }
+    Serial.printf("Save in addr: 0x%04X room number: %d room addr: 0x%04X\n",index, room_number,room);
     //TODO: Write in the next last index
     eep.write(index,epc,12);
     //TODO: Increse length
@@ -284,7 +290,44 @@ bool compare(uint8_t input[], uint8_t source[]){
     
     return true;
 }
+bool eep_erase_room(uint8_t index){
+    uint32_t room;
+    switch (index)
+    {
+    case 1:
+      /* code */
+      room = ROOM_1_LENGTH_ADDR;
+      break;
+    case 2:
+      room = ROOM_2_LENGTH_ADDR;
+      /* code */
+      break;
+    case 3:
+      room = ROOM_3_LENGTH_ADDR;
+      /* code */
+      break;
+      
+    case 4:
+      room = ROOM_4_LENGTH_ADDR;
+      /* code */
+      break;
+    case 5:
+      room = ROOM_5_LENGTH_ADDR;
+      /* code */
+      break;
+    default:
 
+      break;
+    }
+    Serial.printf("Erase at: %04X", room);
+    uint8_t chunkSize = 64;
+    eeErase(chunkSize, room, room + 0x5FF);
+
+    //Re-write length of room
+    eep.write(room + 1 ,  0x00); //=> 0x0000
+    eep.write(room ,  0x00);
+    return true;
+}
 uint16_t get_size_room(ROOM_ADDR room){
     uint16_t lsb = 0,msb = 0;
     uint16_t size;
@@ -323,6 +366,9 @@ uint16_t get_size_room(ROOM_ADDR room){
 void increase_size_room(ROOM_ADDR room){
     uint16_t size;
     uint16_t lsb = 0,msb = 0;
+
+    Serial.printf("Increse room addrress: 0x%04X\n",room);
+
     size = get_size_room(room);
     
     size = size + 1; //0x00 00

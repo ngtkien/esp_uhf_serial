@@ -285,6 +285,62 @@ void notifyTags(uint8_t epc[12]){
     Serial.printf("data send to web %s\n", data);
     ws.textAll(data, len);
 }
+
+void handle_erase_storage(DynamicJsonDocument json){
+    bool res; 
+    //TODO: eep_erase_room(json["room"].as<int>());
+    res = eep_erase_room(json["room"].as<int>());
+    const uint8_t size = JSON_OBJECT_SIZE(2);
+    StaticJsonDocument<size> msg;
+    msg["action"] = "erase";
+    msg["status"] = res;
+    char data[100];
+    size_t len = serializeJson(msg, data);
+    Serial.printf("data send to web %s\n", data);
+    ws.textAll(data, len);
+}
+void handle_get_storage(DynamicJsonDocument json){
+  //TODO: eep_get_room();
+    ROOM_ADDR room;
+    uint16_t size = 0;
+    switch (json["room"].as<int>())
+    {
+    case 1:
+      /* code */
+
+      room = ROOM_ADDR::ROOM_1_ADDRESS;
+      break;
+    case 2:
+      room = ROOM_ADDR::ROOM_2_ADDRESS;
+      /* code */
+      break;
+    case 3:
+      room = ROOM_ADDR::ROOM_3_ADDRESS;
+      /* code */
+      break;
+      
+    case 4:
+      room = ROOM_ADDR::ROOM_4_ADDRESS;
+      /* code */
+      break;
+    case 5:
+      room = ROOM_ADDR::ROOM_5_ADDRESS;
+      /* code */
+      break;
+    default:
+
+      break;
+    }
+    size = get_size_room(room);
+    const uint8_t _size = JSON_OBJECT_SIZE(2);
+    StaticJsonDocument<_size> msg;
+    msg["action"] = "get_storage";
+    msg["size"] = size;
+    char data[100];
+    size_t len = serializeJson(msg, data);
+    Serial.printf("data send to web %s\n", data);
+    ws.textAll(data, len);
+}
 void notifyClients(String msg) {
   ws.textAll(msg);
 }
@@ -338,6 +394,12 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         }
         else if(strcmp(action, "delay_get") == 0){
             handle_get_delay();
+        }
+        else if(strcmp(action, "erase") == 0){
+            handle_erase_storage(json);
+        }
+        else if(strcmp(action, "get_storage") == 0){
+          handle_get_storage(json);
         }
   }
 }
