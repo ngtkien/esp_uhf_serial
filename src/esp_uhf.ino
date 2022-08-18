@@ -217,12 +217,12 @@ bool eep_save_tags(uint8_t room_number, uint8_t epc[]){
     //Calculator index 
     ROOM_ADDR room = table[room_number-1];
     uint16_t size = get_size_room(room);
-    uint32_t index = 0;
+    uint32_t index = room;
     if(size == 0){
         index = room + 12;
     }
     else {
-        index = room + size*12;
+        index = room + (size-1)*12 + 12;
     }
     Serial.printf("Save in addr: 0x%04X room number: %d room addr: 0x%04X\n",index, room_number,room);
     //TODO: Write in the next last index
@@ -321,7 +321,7 @@ bool eep_erase_room(uint8_t index){
     }
     Serial.printf("Erase at: %04X", room);
     uint8_t chunkSize = 64;
-    eeErase(chunkSize, room, room + 0x5FF);
+    eeErase(chunkSize, room, room + 0x4B0);
 
     //Re-write length of room
     eep.write(room + 1 ,  0x00); //=> 0x0000
