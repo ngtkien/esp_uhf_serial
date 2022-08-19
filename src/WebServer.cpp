@@ -164,11 +164,11 @@ void hanle_save_tags(DynamicJsonDocument json){
   
   unsigned int _size;
   String s_epc = json["epc"].as<String>();;
-  Serial.println("Crash ne: " + s_epc);
+  // Serial.println("Crash ne: " + s_epc);
   
   byte byteArray[12] = {0};
   hexCharacterStringToBytes(byteArray, s_epc.c_str());
-  dumpByteArray(byteArray, 12);
+  // dumpByteArray(byteArray, 12);
 
   bool res;
   res =  eep_save_tags(json["room"].as<int>(), byteArray);

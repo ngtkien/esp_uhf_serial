@@ -16,22 +16,23 @@ using namespace admux;
  * 1st argument is the SIG (signal) pin (Arduino digital output pin 3).
  * 2nd argument is the S0-S3 (channel control) pins (Arduino pins 8, 9, 10, 11).
  */
-Mux mux(Pin(14, OUTPUT, PinType::Digital), Pinset(25, 33,32, 27));
+
 
 //Multiplex
+#define SIG 14
 #define EN 26
 #define S0 25
 #define S1 33
 #define S2 32
 #define S3 27
-
-
+// #define RFIDEN 14
+Mux mux(Pin(SIG, OUTPUT, PinType::Digital), Pinset(S0, S1,S2, S3));
 HardwareSerial SerialRF(2);
 RFC_Class rfc(&SerialRF);
 const uint32_t totalKBytes = 32;         //for read and write test functions
 extEEPROM eep(kbits_256, 1, 64);         //device size, number of devices, page size
 extern uint8_t Gain;
-#define RFIDEN 14
+
 byte epc_list[4][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0xA8, 0x4B},
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0x6A, 0x19},
@@ -109,38 +110,43 @@ void onLed(ROOM_ADDR room){
     switch (room)
     {
     case ROOM_ADDR::ROOM_1_ADDRESS:
+        Serial.printf("Open Gate: %d, delay %d\n", 1,delay1);
         delay(delay1*1000);
+        mux.write(LOW, 0);
+        delay(1000);
+        mux.write(HIGH, 0);
+        /* code */
+        break;
+    case ROOM_ADDR::ROOM_2_ADDRESS:
+        Serial.printf("Open Gate: %d, delay %d\n", 2,delay2);
+        delay(delay2*1000);
         mux.write(LOW, 1);
         delay(1000);
         mux.write(HIGH, 1);
         /* code */
         break;
-    case ROOM_ADDR::ROOM_2_ADDRESS:
-        delay(delay2*1000);
+    case ROOM_ADDR::ROOM_3_ADDRESS:
+        Serial.printf("Open Gate: %d, delay %d\n", 3,delay3);
+        delay(delay3*1000);
         mux.write(LOW, 2);
         delay(1000);
         mux.write(HIGH, 2);
         /* code */
         break;
-    case ROOM_ADDR::ROOM_3_ADDRESS:
-        delay(delay3*1000);
+    case ROOM_ADDR::ROOM_4_ADDRESS:
+        Serial.printf("Open Gate: %d, delay %d\n", 4,delay4);
+        delay(delay4*1000);
         mux.write(LOW, 3);
         delay(1000);
         mux.write(HIGH, 3);
         /* code */
         break;
-    case ROOM_ADDR::ROOM_4_ADDRESS:
-        delay(delay4*1000);
-        mux.write(LOW, 4);
-        delay(1000);
-        mux.write(HIGH, 4);
-        /* code */
-        break;
     case ROOM_ADDR::ROOM_5_ADDRESS:
+        Serial.printf("Open Gate: %d, delay %d\n", 5,delay5);
         delay(delay5*1000);
-        mux.write(LOW, 5);
+        mux.write(LOW, 6);
         delay(1000);
-        mux.write(HIGH, 5);
+        mux.write(HIGH, 6);
         /* code */
         break;
     default:
@@ -200,37 +206,6 @@ void test_write(){
 
      increase_size_room(room);
 }
-bool eep_save_tags(uint8_t room_number, uint8_t epc[]){
-
-    for(int i = 0; i < 5; i++){
-        bool res = search_in_flash(epc,table[i]);
-        if(res) {
-            Serial.printf("Find it in Room address 0x%04X\n", table[i]);
-            return false;
-        }
-    }
-    if(room_number > 5){
-        Serial.println("Room not exists");
-        return false;
-    }
-    //Get room_number -> room address and room length
-    //Calculator index 
-    ROOM_ADDR room = table[room_number-1];
-    uint16_t size = get_size_room(room);
-    uint32_t index = room;
-    if(size == 0){
-        index = room + 12;
-    }
-    else {
-        index = room + (size-1)*12 + 12;
-    }
-    Serial.printf("Save in addr: 0x%04X room number: %d room addr: 0x%04X\n",index, room_number,room);
-    //TODO: Write in the next last index
-    eep.write(index,epc,12);
-    //TODO: Increse length
-    increase_size_room(room);
-    return true;
-}
 void test_eeprom(){
     
     Serial.println("TEST READ");
@@ -264,6 +239,53 @@ void test_eeprom(){
     }
     Serial.println();
 }
+bool eep_save_tags(uint8_t room_number, uint8_t epc[]){
+
+    for(int i = 0; i < 5; i++){
+        bool res = search_in_flash(epc,table[i]);
+        if(res) {
+            Serial.printf("Find it in Room address 0x%04X\n", table[i]);
+            return false;
+        }
+    }
+    if(room_number > 5){
+        Serial.println("Room not exists");
+        return false;
+    }
+    //Get room_number -> room address and room length
+    //Calculator index 
+    ROOM_ADDR room = table[room_number-1];
+    uint16_t size = get_size_room(room);
+    uint32_t index = room;
+    if(size > 99){
+        return false;
+    }
+    if(size == 0){
+        index = room;
+    }
+    else {
+        index = room + (size-1)*12 + 12;
+    }
+    Serial.printf("Save in addr: 0x%04X room number: %d room addr: 0x%04X\n",index, room_number,room);
+    //TODO: Write in the next last index
+    uint8_t _data[12];
+    eep.write(index,epc,12);
+    memset(_data, 0, 12);
+    eep.read(index,_data,12);
+    if(compare(epc, _data)){
+        increase_size_room(room);
+        return true;
+    }
+    else {
+            //Next offset
+        Serial.println("Write failed");
+        return false;
+    }
+    //TODO: Increse length
+    
+    
+}
+
 bool find_in_epc_list(uint8_t input[]){
     for(int i = 0; i < ROOM_SIZE ; i++){
         if(compare(input, epc_list[i])){
@@ -280,7 +302,7 @@ bool load_tag_list(){
 bool compare(uint8_t input[], uint8_t source[]){
     
     for (int i = 0; i < 12; i++) {
-        //printf("compa: 0x%02X: 0x%02X\n", input[i], source[i] );
+        printf("compa: 0x%02X: 0x%02X\n", input[i], source[i] );
         if (input[i] != source[i]) {
             return false;
         } else {
@@ -408,16 +430,21 @@ bool search_by_address(byte input[], uint32_t startAddr, uint8_t num_of_search){
     byte _data[12] = {0x0};
     uint32_t _startAddr = startAddr;
     //Serial.printf("Num will searched: %d\n", num_of_search);
-    for(uint8_t j = 0; j < 10; j++){
-        //Serial.printf("j: %d Search at: 0x%04X\n",j, startAddr);
+    for(uint8_t j = 0; j < num_of_search; j++){
+        Serial.printf("j: %d Search at: 0x%04X\n",j, _startAddr);
         memset(_data, 0, 12);
         eep.read(_startAddr,_data,12);
+        for (int h = 0; h < 12; h++)
+        {
+            Serial.printf("%02X", _data[ h], HEX);
+        }
+        Serial.println();
         if(compare(input, _data)){
             return true;
         }
         else {
             //Next offset
-            _startAddr += 12;
+            _startAddr = _startAddr + 12;
         }
 
         
@@ -441,6 +468,7 @@ bool search_in_flash(uint8_t input[], ROOM_ADDR room){
         break;
     case ROOM_ADDR::ROOM_4_ADDRESS:
         result = search_by_address(input, ROOM_ADDR::ROOM_4_ADDRESS,num_of_search);
+        break;
     case ROOM_ADDR::ROOM_5_ADDRESS:
         result = search_by_address(input, ROOM_ADDR::ROOM_5_ADDRESS,num_of_search);    
         break;
@@ -501,10 +529,14 @@ void setup()
 
     rfc.begin();
     
+    // mux.write(HIGH,0);
     Gain = rfc.GetPaPowerLevelFrame();
     Serial.printf("Power Level: %d\n", Gain);
     flashInit();
 
+    mux.write(HIGH, 0);
+
+    // eeErase(64,0,0x7FF8);
     // test_write();
 }
 void uhf_read_user_data(){
@@ -528,7 +560,7 @@ void uhf_process(){
             for(int i = 0; i < 5; i++){
                 res = search_in_flash(label.epc,table[i]);
                 if(res) {
-                    Serial.printf("Find it in Room address 0x%04X\n", table[i]);
+                    Serial.printf("Find in Room address 0x%04X, i: %d\n", table[i],i);
                     //TODO: On Relay 
                     //
                
@@ -556,6 +588,7 @@ void loop()
     
     uhf_process();
 
+    // ws.cleanupClients();
 }
 
  

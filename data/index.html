@@ -504,7 +504,7 @@
             alert("Ghi thanh cong");
           }
           else {
-            alert("Ghi khong thanh cong\n The bi trung");
+            alert("Ghi khong thanh cong\n The bi trung\n");
           }
         }
         if(data.action == "erase" ){
@@ -575,7 +575,7 @@
         var selectedValue = store.options[store.selectedIndex].value;
         if (epc.length < 12   || selectedValue == "selectcard" )
         {
-            alert("value should be eual 12 and choose room");
+            alert("Thẻ có độ dài < 12 và chưa chọn ô chứa");
             return;
         }
         console.log("epc: " + epc + " storage: " + selectedValue);
