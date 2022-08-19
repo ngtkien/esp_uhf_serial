@@ -191,6 +191,14 @@ void set_gain_handle(DynamicJsonDocument json){
    rfc.SetPaPowerFrame(Gain);
    uint16_t _Gain = rfc.GetPaPowerFrame();
    Serial.printf("Power: %d\n", _Gain);
+   const uint8_t size = JSON_OBJECT_SIZE(2);
+    StaticJsonDocument<size> msg;
+    msg["action"] = "set_gain";
+    msg["status"] = true;
+    char data[100];
+    size_t len = serializeJson(msg, data);
+    Serial.printf("data send to web %s\n", data);
+    ws.textAll(data, len);
 }
 void set_delay(DynamicJsonDocument json){
    delay1 = json["value"][0].as<int>();
@@ -199,6 +207,15 @@ void set_delay(DynamicJsonDocument json){
    delay4 = json["value"][3].as<int>();
    delay5 = json["value"][4].as<int>();
    Serial.printf("Set OpenDelay: %d %d %d %d %d", delay1, delay2, delay3, delay4, delay5);
+
+   const uint8_t size = JSON_OBJECT_SIZE(2);
+    StaticJsonDocument<size> msg;
+    msg["action"] = "delay";
+    msg["status"] = true;
+    char data[100];
+    size_t len = serializeJson(msg, data);
+    Serial.printf("data send to web %s\n", data);
+    ws.textAll(data, len);
 }
 void handle_get_delay(){
     const uint8_t size = JSON_OBJECT_SIZE(7);

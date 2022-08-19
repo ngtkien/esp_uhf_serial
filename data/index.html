@@ -480,6 +480,14 @@
   //Handle by key
           document.getElementById('led_state').innerHTML = data.led_status;
         }
+        if(data.action == "set_gain"){
+          if(data.status){
+            alert("Ghi độ lợi thành công");
+          } 
+          else {
+            alert("Ghi độ lợi không thành công");
+          }
+        }
         if(data.action == "get_gain"){
           document.getElementById('gain').innerHTML = data.gain;
         }
@@ -490,7 +498,12 @@
           document.getElementById("epc_tag").value = data.epc;
         }
         if(data.action == "delay"){
-          
+          if(data.status){
+            alert("Ghi độ trễ thành công");
+          } 
+          else {
+            alert("Ghi độ trễ không thành công");
+          }
         }
         if(data.action ==  "delay_get"){
           document.getElementById("delay1").innerHTML = data.value[0];
@@ -501,18 +514,18 @@
         }
         if(data.action == "save_tags"){
           if(data.status){
-            alert("Ghi thanh cong");
+            alert("Ghi thành công");
           }
           else {
-            alert("Ghi khong thanh cong\n The bi trung\n");
+            alert("Ghi không thành công\n Thẻ bị trùng hoặc bộ nhớ đầy ( > 99)\n");
           }
         }
         if(data.action == "erase" ){
           if(data.status){
-            alert("Xoa  thanh cong");
+            alert("Xóa ô nhớ thành công");
           }
           else {
-            alert("Xoa khong thanh cong");
+            alert("Xóa ô nhớ không thành công");
           }
         }
         if(data.action == "get_storage"){
@@ -560,7 +573,7 @@
         var selectedValue = pow.options[pow.selectedIndex].value;
         if (selectedValue == "selectcard" )
         {
-            alert("Choose pow");
+            alert("Vui lòng chọn mức độ lợi");
             return;
         }
         websocket.send(JSON.stringify({'action':'set_gain',
