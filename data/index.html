@@ -160,12 +160,12 @@
                       </div>
                     </div>
                   </div>
-                  <div class="card-body" style="min-height: 240px;"><h2 style="min-height: 40px;">Thiết lập thiết bị</h2>
+                  <div class="card-body" style="min-height: 240px;"><h2 style="min-height: 40px;">Kiểm tra thiết bị</h2>
                     <div class="ms-5 d-inline-block">
 
-                      <h4>LED State </h2>
+                      <h4>Trạng thái đèn LED</h2>
                       <span id="led_state">-</span>
-                      <p><button id="button" class="button">Toggle</button></p>
+                      <p><button id="button" class="button">Bật/Tắt đèn LED</button></p>
 
                       <!-- <p >Độ trễ: <span id="delay">-</span>giây</p>
                       Thiết lập độ trễ: 
@@ -184,7 +184,7 @@
                     <div class="d-flex align-items-baseline">
                       <div class="h4 mb-3 me-2">
                         <p style="position:relative; left:30px; ">Mức Độ lợi Ăn-ten: <strong><span id="gain">-</span></strong></p>
-                        <button id="button_pow" class="button" style="position: relative; left:100px ">Get</button>
+                        <button id="button_pow" class="button" style="position: relative; left:100px ">Đọc độ lợi</button>
                         <form>
                           <p><label style="position:relative; left:30px; top: 20px;"><strong>Thiết lập độ lợi:</strong></label></p>
                           <select style="position:relative; left:55px; top: 20px" id="gain_set">
@@ -201,7 +201,7 @@
                           <option value=9>9</option>
                           </select>
                         </form>
-                        <button style="position: relative; top: 40px; left:60%" id="set_pow" class="button">Set</button>
+                        <button style="position: relative; top: 40px; left:60%" id="set_pow" class="button">Cài đặt độ lợi</button>
                       </div>
                     </div>
                   </div>
@@ -209,7 +209,7 @@
                     <div class="d-flex align-items-center"> <h3>Chức năng hiện tại</h3>
                     </div>
                     <div class="d-flex align-items-baseline"  style="min-height: 20px;">
-                      <h3 style="position: relative; top: 10px; left:100px; min-width: none;"><strong><span id="function">Normal</span></strong></h3>
+                      <h3 style="position: relative; top: 10px; left:100px; min-width: none;"><strong><span id="function">Điều Khiển Hệ Thống</span></strong></h3>
                       </div>
                     <div class="d-flex align-items-baseline"  style="min-height: 80px;">
                       <a class="btn btn-white" style="position: relative; top: 50px; left: 55px;" id="fn_normal">Chuyển trạng thái</a>
@@ -228,8 +228,8 @@
                         </div>
                         <div class="d-flex align-items-baseline" style="min-height: 290px;">
                           <form >
-                            <p><lable style="position:relative; left:30px; ">EPC Tags: <input class="input" type="text" id ="epc_tag" type="text" minlength="24" maxlength="24" size="30" name="epc_tag" style="position:relative; left: 30px; top:30px; "></lable></p>
-                            <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô lưu trữ:</label>
+                            <p><lable style="position:relative; left:30px; ">Mã số thẻ: <input class="input" type="text" id ="epc_tag" type="text" minlength="24" maxlength="24" size="30" name="epc_tag" style="position:relative; left: 30px; top:30px; "></lable></p>
+                            <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô để lưu mã số thẻ:</label>
                             <select id="storage" style="position:relative;top:0px;left:80px; top: 30px">
                             <option value="selectcard">--- Vui lòng chọn ô ---</option>
                             <option value=1>1</option>
@@ -272,7 +272,7 @@
                       
                       <div class="d-flex align-items-baseline" style="min-height: 150px;">
                         <form >
-                          <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô cần xóa:</label>
+                          <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô cần xóa dữ liệu:</label>
                           <select id="erase_storage" style="position:relative;top:0px;left:80px; top: 30px">
                           <option value="selectcard">--- Vui lòng chọn ô ---</option>
                           <option value=1>1</option>
@@ -288,7 +288,7 @@
                         
                          
                          <form >
-                          <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô nhớ cần xem số lượng:</label>
+                          <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô nhớ để xem số lượng thẻ đang lưu</label>
                           <select id="get_storage" style="position:relative;top:0px;left:80px; top: 30px">
                             <option value="selectcard">--- Vui lòng chọn ô ---</option>
                             <option value=1>1</option>
@@ -309,39 +309,40 @@
                   </div>
                 </a>
               </div>
-              <div class="col-sm-5 col-lg-2">
+              <div class="col-sm-5 col-lg-6">
                 <a class="card card-sponsor target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
-                  <div class="card-body " style=" min-height: 240px;"><h3 style="min-height: 40px;">Thiết lập độ trễ</h3>
+                  <div class="card-body " style=" min-height: 240px;"><h3 style="min-height: 40px;">Thiết lập độ trễ đóng mở khay sau khi quẹt thẻ</h3>
                       <center>
-                        <p>Độ trễ 1: <span id="delay1">1</span>giây
+                        <label>Độ trễ cho từng khay tương ứng với số thứ tự</label>
+                        <p>Độ trễ 1: <span id="delay1">1</span> giây
                           <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input1" minlength="2" maxlength="2" size="5"> 
                           </p>
-                          <p >Độ trễ 2: <span id="delay2">2</span>giây
+                          <p >Độ trễ 2: <span id="delay2">2</span> giây
                           <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input2" minlength="2" maxlength="2" size="5"> 
                           </p>
-                          <p >Độ trễ 3: <span id="delay3">3</span>giây
+                          <p >Độ trễ 3: <span id="delay3">3</span> giây
                           <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input3" minlength="2" maxlength="2" size="5"> 
                           </p>
-                          <p >Độ trễ 4: <span id="delay4">4</span>giây
+                          <p >Độ trễ 4: <span id="delay4">4</span> giây
                           <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input4" minlength="2" maxlength="2" size="5"> 
                           </p>
-                          <p >Độ trễ 5: <span id="delay5">5</span>giây
+                          <p >Độ trễ 5: <span id="delay5">5</span> giây
                           <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input5" minlength="2" maxlength="2" size="5"> 
                           </p>
-                          <button style="position: relative; top: 10px; left: 10px;" id="delay_set" class="button">Set</button>
-                          <button style="position: relative; top: 10px; left: 10px;" id="delay_get" class="button">Get</button>
+                          <button style="position: relative; top: 10px; left: 10px;" id="delay_set" class="button">Cài đặt độ trễ</button>
+                          <button style="position: relative; top: 10px; left: 10px;" id="delay_get" class="button">Đọc độ trễ hiện tại</button>
                         </p>
                       </center>
                   </div>
                 </a>
               </div>
-              <div class="col-md-6 col-lg-4">
+              <!-- <div class="col-md-6 col-lg-4">
                 <a class="card card-sponsor" target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
                   <div class="card-body">
                     
                   </div>
                 </a>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -492,7 +493,12 @@
           document.getElementById('gain').innerHTML = data.gain;
         }
         if(data.action == "change_mode"){
-          document.getElementById("function").innerHTML = data.mode;
+          if(data.mode == "Normal"){
+            document.getElementById("function").innerHTML = "Điều Khiển Hệ Thống";
+          }
+          else {
+            document.getElementById("function").innerHTML = "Đọc và ghi thẻ";
+          }
         }
         if(data.action == "post_epc"){
           document.getElementById("epc_tag").value = data.epc;
