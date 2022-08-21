@@ -585,8 +585,15 @@ void loop()
 
     delay(300);
     //delay(500);
+    if(WiFi.isConnected()){
+        
+        uhf_process();
+    }
+    else {
+        ledState = !ledState;
+        digitalWrite(ledPin, ledState);
+    }
     
-    uhf_process();
 
     // ws.cleanupClients();
 }

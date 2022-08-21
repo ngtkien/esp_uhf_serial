@@ -480,7 +480,18 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
     Serial.println("- frite failed");
   }
 }
+bool deleteFile(fs::FS &fs, const char* path){
+  Serial.printf("Remove file: %s\r\n", path);
+  bool res = fs.remove(path);
+  return res;
+}
 
+void cleanWifiStorage(){
+    deleteFile(SPIFFS, ssidPath);
+    deleteFile(SPIFFS, passPath);
+    deleteFile(SPIFFS, ipPath);
+    deleteFile (SPIFFS, gatewayPath);
+}
 // Initialize WiFi
 bool initWiFi() {
   if(ssid=="" || ip==""){
@@ -495,6 +506,7 @@ bool initWiFi() {
 
   if (!WiFi.config(localIP, localGateway, subnet)){
     Serial.println("STA Failed to configure");
+    cleanWifiStorage();
     return false;
   }
   WiFi.begin(ssid.c_str(), pass.c_str());
@@ -507,11 +519,13 @@ bool initWiFi() {
     currentMillis = millis();
     if (currentMillis - previousMillis >= interval) {
       Serial.println("Failed to connect.");
+      cleanWifiStorage();
       return false;
     }
   }
 
   Serial.println(WiFi.localIP());
+
   return true;
 }
 

@@ -12,6 +12,7 @@ enum device_mote{
 
 extern AsyncWebSocket  ws;
 // Set LED GPIO
+extern bool ledState;
 extern const int ledPin;
 extern uint8_t delay1;
 extern uint8_t delay2;
