@@ -1,12 +1,17 @@
 
 #include <Arduino.h>
 #include "esp_uhf.h"
+#include "EasyBuzzer.h"
+
+unsigned int frequency = 1000;
+unsigned int duration = 1000;
 // #include "RF_Commands.h"
 // #include "HardwareSerial.h"
 // #include <Wire.h>
 // #include <extEEPROM.h>
 // #include <Mux.h>
 // #include "WebServer.h"
+
 using namespace admux;
 
 #define ROOM_SIZE 5
@@ -32,7 +37,7 @@ RFC_Class rfc(&SerialRF);
 const uint32_t totalKBytes = 32;         //for read and write test functions
 extEEPROM eep(kbits_256, 1, 64);         //device size, number of devices, page size
 extern uint8_t Gain;
-
+bool active = false;
 byte epc_list[4][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0xA8, 0x4B},
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0x6A, 0x19},
@@ -508,6 +513,11 @@ byte controlPins[] = {B00000000,
                   B10110000,
                   B01110000,
                   B11110000 }; 
+
+void buzzer_done() {
+	Serial.println("Done!");
+    active = true;
+}                 
 void setup()
 {
     
@@ -536,6 +546,14 @@ void setup()
 
     mux.write(HIGH, 0);
 
+    active = true;
+    // EasyBuzzer.setPin()
+    
+    EasyBuzzer.singleBeep(
+		frequency, 	// Frequency in hertz(HZ).  
+		duration, 	// Duration of the beep in milliseconds(ms). 
+		buzzer_done		// [Optional] Function to call when done.
+	);
     // eeErase(64,0,0x7FF8);
     // test_write();
 }
@@ -563,7 +581,7 @@ void uhf_process(){
                     Serial.printf("Find in Room address 0x%04X, i: %d\n", table[i],i);
                     //TODO: On Relay 
                     //
-               
+                    EasyBuzzer.singleBeep(frequency,duration);
                     onLed(table[i]);
                     break;
                 }
@@ -586,15 +604,18 @@ void loop()
     delay(300);
     //delay(500);
     if(WiFi.isConnected()){
+        if(active){
+            uhf_process();
+        }
         
-        uhf_process();
     }
     else {
         ledState = !ledState;
         digitalWrite(ledPin, ledState);
     }
     
-
+    /* Always call this function in the loop for EasyBuzzer to work. */
+	EasyBuzzer.update();
     // ws.cleanupClients();
 }
 

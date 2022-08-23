@@ -506,7 +506,7 @@ bool initWiFi() {
 
   if (!WiFi.config(localIP, localGateway, subnet)){
     Serial.println("STA Failed to configure");
-    cleanWifiStorage();
+    // cleanWifiStorage();
     return false;
   }
   WiFi.begin(ssid.c_str(), pass.c_str());
@@ -519,7 +519,7 @@ bool initWiFi() {
     currentMillis = millis();
     if (currentMillis - previousMillis >= interval) {
       Serial.println("Failed to connect.");
-      cleanWifiStorage();
+      // cleanWifiStorage();
       return false;
     }
   }

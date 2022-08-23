@@ -327,34 +327,9 @@ bool RFC_Class::SetPaPowerFrame(PaPower pow)
         data[0] = 0x07;
         data[1] = 0xD0;
         break;
-    case G_1850:
-    //1850
-        data[0] = 0x07;
-        data[1] = 0x3A;
-        break;
-    case G_1700:
-    //1700
-        data[0] = 0x06;
-        data[1] = 0xA4;
-        break;
-    case G_1550:
-    //1550
-        data[0] = 0x06;
-        data[1] = 0x0E;
-        break;
-    case G_1400:
-    //1400
-        data[0] = 0x05;
-        data[1] = 0x78;
-        break;
-    case G_1250:
-    //1250
-        data[0] = 0x04;
-        data[1] = 0xE2;
-        break;
     default:
-        data[0] = 0x07;
-        data[1] = 0xD0;
+        data[0] = 0x0A;
+        data[1] = 0x28;
         break;
     }
     SendFrame(BuildFrame(0X00, 0XB6, 2, data));
