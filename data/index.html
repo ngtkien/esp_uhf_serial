@@ -163,10 +163,12 @@
                   <div class="card-body" style="min-height: 240px;"><h2 style="min-height: 40px;">Kiểm tra thiết bị</h2>
                     <div class="ms-5 d-inline-block">
 
-                      <h4>Trạng thái đèn LED</h2>
+                      <h4>Trạng thái đèn LED</h4>
                       <span id="led_state">-</span>
                       <p><button id="button" class="button">Bật/Tắt đèn LED</button></p>
-
+                      
+                      <h4>Điều khiển còi</h4>
+                      <p><button id="button_beep" class="button">Beep</button></p>
                       <!-- <p >Độ trễ: <span id="delay">-</span>giây</p>
                       Thiết lập độ trễ: 
                       <button style="position: relative; top: 34px; left: 0px;" id="delay_set" class="button">Set</button>
@@ -569,6 +571,7 @@
         document.getElementById('delay_get').addEventListener('click',delay_get);
         document.getElementById('btn_erase').addEventListener('click',erase_strage_fn);
         document.getElementById('btn_get_storage').addEventListener('click',get_strage_fn);
+        document.getElementById('button_beep').addEventListener('click',on_buzzer);
       }
 
       //TODO: send backend -> toggle led
@@ -660,6 +663,9 @@
         }
         console.log("get_storage: " + selectedValue);
         websocket.send(JSON.stringify({'action':'get_storage','room':parseInt(selectedValue)}));
+      }
+      function on_buzzer(){
+        websocket.send(JSON.stringify({'action':'buzzer'}));
       }
     </script>
   </body>

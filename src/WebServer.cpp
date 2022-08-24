@@ -2,6 +2,7 @@
 #include "WebServer.h"
 #include "esp_uhf.h"
 #include "strings.h"
+#include "EasyBuzzer.h"
 // Replace with your network credentials
 // Search for parameter in HTTP POST request
 const char* PARAM_INPUT_1 = "ssid";
@@ -417,6 +418,9 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         }
         else if(strcmp(action, "get_storage") == 0){
           handle_get_storage(json);
+        }
+        else if(strcmp(action, "buzzer") == 0){
+          EasyBuzzer.singleBeep(1000, 250, buzzer_done);
         }
   }
 }

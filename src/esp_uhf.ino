@@ -516,6 +516,7 @@ byte controlPins[] = {B00000000,
 
 void buzzer_done() {
 	Serial.println("Done!");
+    EasyBuzzer.stopBeep();
     active = true;
 }                 
 void setup()
@@ -547,13 +548,16 @@ void setup()
     mux.write(HIGH, 0);
 
     active = true;
-    // EasyBuzzer.setPin()
+    
+    EasyBuzzer.setPin(18);
     
     EasyBuzzer.singleBeep(
 		frequency, 	// Frequency in hertz(HZ).  
 		duration, 	// Duration of the beep in milliseconds(ms). 
 		buzzer_done		// [Optional] Function to call when done.
 	);
+
+
     // eeErase(64,0,0x7FF8);
     // test_write();
 }
@@ -581,7 +585,7 @@ void uhf_process(){
                     Serial.printf("Find in Room address 0x%04X, i: %d\n", table[i],i);
                     //TODO: On Relay 
                     //
-                    EasyBuzzer.singleBeep(frequency,duration);
+                    EasyBuzzer.singleBeep(frequency,200);
                     onLed(table[i]);
                     break;
                 }
