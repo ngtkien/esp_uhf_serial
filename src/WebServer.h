@@ -14,11 +14,11 @@ extern AsyncWebSocket  ws;
 // Set LED GPIO
 extern bool ledState;
 extern const int ledPin;
-extern uint8_t delay1;
-extern uint8_t delay2;
-extern uint8_t delay3;
-extern uint8_t delay4;
-extern uint8_t delay5;
+// extern uint8_t delay1;
+// extern uint8_t delay2;
+// extern uint8_t delay3;
+// extern uint8_t delay4;
+// extern uint8_t delay5;
 extern device_mote  _mode;
 void WebSetup();
 

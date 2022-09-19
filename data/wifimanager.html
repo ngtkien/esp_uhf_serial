@@ -18,7 +18,8 @@
             <label for="ssid">SSID</label>
             <input type="text" id ="ssid" name="ssid"><br>
             <label for="pass">Password</label>
-            <input type="text" id ="pass" name="pass"><br>
+            <input type="password" id ="pass" name="pass">
+            <input type="checkbox" onclick="show_passwd()"><label id="hide_show">Hide</label><br>
             <label for="ip">IP Address</label>
             <input type="text" id ="ip" name="ip" value="192.168.0.103"><br>
             <label for="gateway">Gateway Address</label>
@@ -30,4 +31,17 @@
     </div>
   </div>
 </body>
+<script>
+function show_passwd() {
+  var x = document.getElementById("pass");
+  var y = document.getElementById("hide_show");
+  if (x.type === "password") {
+    x.type = "text";
+    y.innerHTML("Hiện");
+  } else {
+    x.type = "password";
+    y.innerHTML("Ẩn");
+  }
+}
+</script>
 </html>

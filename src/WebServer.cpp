@@ -46,9 +46,11 @@ const char* room_storage = "room";
 const int ledPin = 2;
 
 // Stores LED state
+#define NUM_GATE 16
 bool ledState = 0;
 RFC_Class::PaPower Gain = RFC_Class::PaPower::G_1550;
-uint8_t delay1=1,delay2=2,delay3=3,delay4=4,delay5=5;
+// uint8_t delay1=1,delay2=1,delay3=1,delay4=1,delay5=1;
+uint8_t tm_delay[NUM_GATE] =  {0};
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 AsyncWebSocket  ws("/ws");
@@ -202,12 +204,19 @@ void set_gain_handle(DynamicJsonDocument json){
     ws.textAll(data, len);
 }
 void set_delay(DynamicJsonDocument json){
-   delay1 = json["value"][0].as<int>();
-   delay2 = json["value"][1].as<int>();
-   delay3 = json["value"][2].as<int>();
-   delay4 = json["value"][3].as<int>();
-   delay5 = json["value"][4].as<int>();
-   Serial.printf("Set OpenDelay: %d %d %d %d %d", delay1, delay2, delay3, delay4, delay5);
+  //  delay1 = json["value"][0].as<int>();
+  //  delay2 = json["value"][1].as<int>();
+  //  delay3 = json["value"][2].as<int>();
+  //  delay4 = json["value"][3].as<int>();
+  //  delay5 = json["value"][4].as<int>();
+   int num = json["value"].size();
+   for(int i = 0; i < num; i++){
+     tm_delay[i] = json["value"][i].as<int>();
+     eep.write(TIMER_DELAY_ADDR + i,tm_delay[i]);
+     Serial.printf("Set OpenDelay: %d = %d", tm_delay[i], json["value"][i].as<int>());
+
+     
+   }
 
    const uint8_t size = JSON_OBJECT_SIZE(2);
     StaticJsonDocument<size> msg;
@@ -222,12 +231,15 @@ void handle_get_delay(){
     const uint8_t size = JSON_OBJECT_SIZE(7);
     StaticJsonDocument<size> json;
     json["action"] = "delay_get";
-    json["value"][0] = delay1;
-    json["value"][1] = delay2;
-    json["value"][2] = delay3;
-    json["value"][3] = delay4;
-    json["value"][4] = delay5;
-    char data[100];
+    for(int i = 0; i < ROOM_NUMBER;i++){
+      json["value"][i] = tm_delay[i];
+    }
+    // json["value"][0] = delay1;
+    // json["value"][1] = delay2;
+    // json["value"][2] = delay3;
+    // json["value"][3] = delay4;
+    // json["value"][4] = delay5;
+    char data[200];
     size_t len = serializeJson(json, data);
     Serial.printf("data send to web %s\n", data);
     ws.textAll(data, len);
@@ -260,7 +272,7 @@ void notifyInit() {
     json["action"] = "init";
     json["led_status"] = ledState ? "ON" : "OFF";
     json["gain"] = Gain;
-    json["delay"] = delay1;
+    json["delay"] = tm_delay[0];
     if(_mode == NORMAL){
       json["mode"] = "Normal";
     }
@@ -513,7 +525,9 @@ bool initWiFi() {
     // cleanWifiStorage();
     return false;
   }
+
   WiFi.begin(ssid.c_str(), pass.c_str());
+
   Serial.println("Connecting to WiFi...");
 
   unsigned long currentMillis = millis();
@@ -586,7 +600,7 @@ void WebSetup(){
       // Connect to Wi-Fi network with SSID and password
       Serial.println("Setting AP (Access Point)");
       // NULL sets an open Access Point
-      WiFi.softAP("WIFI-MANAGER", NULL);
+      WiFi.softAP("WIFI-MANAGER", "123456789");
 
       IPAddress IP = WiFi.softAPIP();
       Serial.print("AP IP address: ");
