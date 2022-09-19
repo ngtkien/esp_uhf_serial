@@ -753,6 +753,9 @@ void uhf_process(){
                     break;
                 }
             }
+            if(!res){
+                delay(1000);
+            }
         }
         else if(_mode == SAVE_TAGS){
             EasyBuzzer.singleBeep(

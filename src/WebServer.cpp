@@ -213,7 +213,7 @@ void set_delay(DynamicJsonDocument json){
    for(int i = 0; i < num; i++){
      tm_delay[i] = json["value"][i].as<int>();
      eep.write(TIMER_DELAY_ADDR + i,tm_delay[i]);
-     Serial.printf("Set OpenDelay: %d = %d", tm_delay[i], json["value"][i].as<int>());
+     Serial.printf("Set OpenDelay: %d = %d\n", tm_delay[i], json["value"][i].as<int>());
 
      
    }
@@ -383,7 +383,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
 
     // const uint8_t size = JSON_OBJECT_SIZE(1);
 
-        DynamicJsonDocument json(200);
+        DynamicJsonDocument json(300);
         // StaticJsonDocument<size> json;
         DeserializationError err = deserializeJson(json, data);
         if (err) {
