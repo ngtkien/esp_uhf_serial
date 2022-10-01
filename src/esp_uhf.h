@@ -8,6 +8,7 @@
 #include <Mux.h>
 #include "WebServer.h"
 
+
 typedef enum {
   ROOM_1_ADDRESS = 0x008C,
   ROOM_2_ADDRESS = 0x00F0,
@@ -26,6 +27,15 @@ typedef enum {
   ROOM_15_ADDRESS = 0x2990,
   ROOM_16_ADDRESS = 0x2F6C
 } ROOM_ADDR;
+
+typedef struct {
+    bool res;
+    uint32_t addr;
+    uint8_t index_in_room;
+    uint8_t index_room;
+    ROOM_ADDR addr_room;
+} search_result_t;
+
 #define ROOM_NUMBER 16
 #define ROOM_1_LENGTH_ADDR 0x0080
 #define ROOM_2_LENGTH_ADDR 0x00E4
@@ -52,8 +62,9 @@ extern RFC_Class rfc;
 extern extEEPROM eep;         //device size, number of devices, page size
 
 bool eep_save_tags(uint8_t room_number, uint8_t epc[]);
-bool search_in_flash(uint8_t input[], ROOM_ADDR room);
+search_result_t search_in_flash(uint8_t input[], ROOM_ADDR room);
 uint16_t get_size_room(ROOM_ADDR room);
 bool eep_erase_room(uint8_t index);
-
+search_result_t eep_find_tags(uint8_t epc[]);
+bool eep_delete_tags(uint8_t epc[]);
 void buzzer_done();

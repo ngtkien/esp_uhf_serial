@@ -419,10 +419,46 @@ void handle_get_storage(DynamicJsonDocument json){
     ws.textAll(data, len);
 }
 void handle_finds_tags_storagre_index(DynamicJsonDocument json){
+  unsigned int _size;
+  String s_epc = json["epc"].as<String>();;
+  
+  
+  byte byteArray[12] = {0};
+  hexCharacterStringToBytes(byteArray, s_epc.c_str());
+  // dumpByteArray(byteArray, 12);
 
+  search_result_t res;
+  res =  eep_find_tags(byteArray);
+  Serial.printf("find tags: index_room: %d 0x%04X\n" ,res.index_room, res.addr_room);
+  const uint8_t size = JSON_OBJECT_SIZE(3);
+  StaticJsonDocument<size> msg;
+  msg["action"] = "find_tags";
+  msg["index_room"] = res.index_room;
+  msg["status"] = res.res;
+
+
+  char data[100];
+    size_t len = serializeJson(msg, data);
+    Serial.printf("data send to web %s\n", data);
+    ws.textAll(data, len);
 }
 void handle_delete_tags_storagre_index(DynamicJsonDocument json){
+  unsigned int _size;
+  String s_epc = json["epc"].as<String>();;
+  // Serial.println("Crash ne: " + s_epc);
+  
+  byte byteArray[12] = {0};
+  hexCharacterStringToBytes(byteArray, s_epc.c_str());
+  // dumpByteArray(byteArray, 12);
 
+  bool res;
+  res =  eep_delete_tags(byteArray);
+  // Serial.printf("find tags: index_room: %d 0x%04X\n" ,res.index_room, res.addr_room);
+ 
+  const uint8_t size = JSON_OBJECT_SIZE(2);
+  StaticJsonDocument<size> msg;
+  msg["action"] = "delete_tags";
+  msg["status"] = res;
 }
 void notifyClients(String msg) {
   ws.textAll(msg);
@@ -487,7 +523,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         else if(strcmp(action, "buzzer") == 0){
           EasyBuzzer.singleBeep(1000, 250, buzzer_done);
         }
-        else if(strcmp(action, "finds_tags") == 0){
+        else if(strcmp(action, "find_tags") == 0){
           handle_finds_tags_storagre_index(json);
         }
         else if(strcmp(action, "delete_tags") == 0){
