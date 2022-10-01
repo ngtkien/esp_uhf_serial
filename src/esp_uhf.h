@@ -44,6 +44,8 @@ typedef enum {
 #define ROOM_15_LENGTH_ADDR 0x2984
 #define ROOM_16_LENGTH_ADDR 0x2F60
 
+//LED STATE
+#define LED_STASTE_PIN 15
 #define WORK_STATE_ADDR 0x00
 #define TIMER_DELAY_ADDR 0x01 //0x01- 0x11
 extern RFC_Class rfc;

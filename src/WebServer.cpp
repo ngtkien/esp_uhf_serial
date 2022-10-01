@@ -48,6 +48,7 @@ const int ledPin = 2;
 // Stores LED state
 #define NUM_GATE 16
 bool ledState = 0;
+bool ledMachineState = 0;
 RFC_Class::PaPower Gain = RFC_Class::PaPower::G_1550;
 // uint8_t delay1=1,delay2=1,delay3=1,delay4=1,delay5=1;
 uint8_t tm_delay[NUM_GATE] =  {0};
@@ -75,10 +76,12 @@ void mode_toggle(){
   if(_mode != NORMAL){
     _mode = NORMAL;
     json["mode"] = "Normal";
+    digitalWrite(LED_STASTE_PIN, HIGH);
   }
   else {
     _mode = SAVE_TAGS;
     json["mode"] = "Save";
+    digitalWrite(LED_STASTE_PIN, LOW);
   }
 
     char data[100];
@@ -228,7 +231,7 @@ void set_delay(DynamicJsonDocument json){
     ws.textAll(data, len);
 }
 void handle_get_delay(){
-    const uint8_t size = JSON_OBJECT_SIZE(7);
+    const uint16_t size = JSON_OBJECT_SIZE(20);
     StaticJsonDocument<size> json;
     json["action"] = "delay_get";
     for(int i = 0; i < ROOM_NUMBER;i++){
@@ -239,7 +242,7 @@ void handle_get_delay(){
     // json["value"][2] = delay3;
     // json["value"][3] = delay4;
     // json["value"][4] = delay5;
-    char data[200];
+    char data[300];
     size_t len = serializeJson(json, data);
     Serial.printf("data send to web %s\n", data);
     ws.textAll(data, len);
@@ -355,10 +358,54 @@ void handle_get_storage(DynamicJsonDocument json){
       break;
     case 5:
       room = ROOM_ADDR::ROOM_5_ADDRESS;
+      break;
+    case 6:
+      /* code */
+
+      room = ROOM_ADDR::ROOM_6_ADDRESS;
+      break;
+    case 7:
+      room = ROOM_ADDR::ROOM_7_ADDRESS;
       /* code */
       break;
-    default:
+    case 8:
+      room = ROOM_ADDR::ROOM_8_ADDRESS;
+      /* code */
+      break;
+      
+    case 9:
+      room = ROOM_ADDR::ROOM_9_ADDRESS;
+      /* code */
+      break;
+    case 10:
+      room = ROOM_ADDR::ROOM_10_ADDRESS;
+    case 11:
+      /* code */
 
+      room = ROOM_ADDR::ROOM_11_ADDRESS;
+      break;
+    case 12:
+      room = ROOM_ADDR::ROOM_12_ADDRESS;
+      /* code */
+      break;
+    case 13:
+      room = ROOM_ADDR::ROOM_13_ADDRESS;
+      /* code */
+      break;
+      
+    case 14:
+      room = ROOM_ADDR::ROOM_14_ADDRESS;
+      /* code */
+      break;
+    case 15:
+      room = ROOM_ADDR::ROOM_15_ADDRESS;
+      /* code */
+      break;
+    case 16:
+      room = ROOM_ADDR::ROOM_16_ADDRESS;
+      /* code */
+      break;  
+    default:
       break;
     }
     size = get_size_room(room);
@@ -370,6 +417,12 @@ void handle_get_storage(DynamicJsonDocument json){
     size_t len = serializeJson(msg, data);
     Serial.printf("data send to web %s\n", data);
     ws.textAll(data, len);
+}
+void handle_finds_tags_storagre_index(DynamicJsonDocument json){
+
+}
+void handle_delete_tags_storagre_index(DynamicJsonDocument json){
+
 }
 void notifyClients(String msg) {
   ws.textAll(msg);
@@ -433,6 +486,12 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         }
         else if(strcmp(action, "buzzer") == 0){
           EasyBuzzer.singleBeep(1000, 250, buzzer_done);
+        }
+        else if(strcmp(action, "finds_tags") == 0){
+          handle_finds_tags_storagre_index(json);
+        }
+        else if(strcmp(action, "delete_tags") == 0){
+          handle_delete_tags_storagre_index(json);
         }
   }
 }

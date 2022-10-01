@@ -227,6 +227,7 @@
                             </label></p>
                             <p><lable style="position:relative; left:30px; ">Mã số thẻ: <input class="input" type="text" id ="epc_tag" type="text" minlength="24" maxlength="24" size="30" name="epc_tag" style="position:relative; left: 30px; top:30px; "></lable></p>
                             <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô để lưu mã số thẻ:</label>
+                            
                             <select id="storage" style="position:relative;top:0px;left:80px; top: 30px">
                             <option value="selectcard">--- Vui lòng chọn ô ---</option>
                             <option value=1>1</option>
@@ -246,14 +247,19 @@
                             <option value=15>15</option>
                             <option value=16>16</option>         
                             </select>
-                           </form><br>
-                           <button id="btn_save" class="button" style="position: relative; top: 150px; right: 110px">Lưu</button>
+                            <button id="btn_save" class="button" style="position: relative; top: 70px; right: 100px">Lưu</button>
+                            <p><lable style="position:relative; top: 60px; left:30px; ">Ô đang chứa: <input class="input" type="text" id ="epc_tag_storage" type="text" minlength="24" maxlength="24" size="30" name="epc_tag_storage" style="position:relative; left: 10px; top:30px; "></lable></p>
+                            <button id="btn_find_tags" class="button" style="position: relative; top: 90px; left: 240px">Tìm</button>
+                            <button id="btn_delete_tags" class="button" style="position: relative; top: 90px; left: 240px">Xóa Thẻ</button>
                           
+                           </form><br>
+                           
+                           
                         </div>
                       </div>
                     </a>
                   </div>
-                  <div class="col-12">
+                  <!-- <div class="col-12">
                     <div class="card">
                       <a class="card card-sponsor target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
                         <div class="d-flex align-items-center"><h3></h3>
@@ -265,7 +271,7 @@
                       
                       </a>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
               <div class="col-lg-6">
@@ -623,6 +629,18 @@
         if(data.action == "get_storage"){
           document.getElementById("storage_size").value = data.size;
         }
+        if(data.action == "find_tags") {
+
+          document.getElementById("epc_tag_storage").value = data.index;
+        }
+        if(data.action == "delete_tags"){
+          if(data.status){
+            alert("Xóa thẻ thành công");
+          }
+          else {
+            alert("Xóa thẻ không thành công");
+          }
+        }
       }
       function onLoad(event) {
         initWebSocket();
@@ -640,6 +658,8 @@
         document.getElementById('btn_erase').addEventListener('click',erase_strage_fn);
         document.getElementById('btn_get_storage').addEventListener('click',get_strage_fn);
         document.getElementById('button_beep').addEventListener('click',on_buzzer);
+        document.getElementById('btn_find_tags').addEventListener('click',finds_tags_storage_index);
+        document.getElementById('btn_delete_tags').addEventListener('click',delete_tags_storage_index);
       }
 
       //TODO: send backend -> toggle led
@@ -756,6 +776,27 @@
       }
       function on_buzzer(){
         websocket.send(JSON.stringify({'action':'buzzer'}));
+      }
+      function finds_tags_storage_index() {
+        let epc =  document.getElementById('epc_tag').value;
+        if (epc.length < 12)
+        {
+            alert("Thẻ có độ dài < 12");
+            return;
+        }
+        console.log("find storage of epc: " + epc);
+        websocket.send(JSON.stringify({'action':'find_tags','epc':epc}));
+      }
+      function delete_tags_storage_index() {
+        let epc =  document.getElementById('epc_tag').value;
+        let store =  document.getElementById('epc_tag_storage');
+        if (epc.length < 12)
+        {
+            alert("Thẻ có độ dài < 12");
+            return;
+        }
+        console.log("find storage of epc: " + epc);
+        websocket.send(JSON.stringify({'action':'delete_tags','epc':epc,'room':parseInt(selectedValue)}));
       }
     </script>
   </body>

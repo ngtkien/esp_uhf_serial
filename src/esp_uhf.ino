@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include "esp_uhf.h"
 #include "EasyBuzzer.h"
-
+#include "OneButton.h"
 unsigned int frequency = 1000;
 unsigned int duration = 300;
 // #include "RF_Commands.h"
@@ -23,7 +23,8 @@ using namespace admux;
  * 1st argument is the SIG (signal) pin (Arduino digital output pin 3).
  * 2nd argument is the S0-S3 (channel control) pins (Arduino pins 8, 9, 10, 11).
  */
-
+//
+#define STATE_SWITCH  4
 
 //Multiplex
 #define SIG 14
@@ -33,6 +34,7 @@ using namespace admux;
 #define S2 32
 #define S3 27
 // #define RFIDEN 14
+OneButton rs_btn(STATE_SWITCH);
 Mux mux(Pin(SIG, OUTPUT, PinType::Digital), Pinset(S0, S1,S2, S3));
 HardwareSerial SerialRF(2);
 RFC_Class rfc(&SerialRF);
@@ -123,8 +125,8 @@ void onLed(ROOM_ADDR room){
     for(int i = 0; i < ROOM_NUMBER; i++ ){
         if(room == table[i]){
             mux.write(LOW, i);
-            delay(tm_delay[i]);
-             mux.write(HIGH, i);
+            delay(tm_delay[i]*1000);
+            mux.write(HIGH, i);
         }
     }
     // switch (room)
@@ -618,7 +620,14 @@ void buzzer_done() {
 	Serial.println("Done!");
     EasyBuzzer.stopBeep();
     active = true;
-}                 
+}                
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
+
+void btnLongPressHandle(){
+    Serial.println("btn reset machine is pressed");
+    cleanWifiStorage();
+    resetFunc();
+}
 void setup()
 {
     
@@ -627,6 +636,11 @@ void setup()
     Serial.begin(115200);
 
     pinMode(ledPin, OUTPUT);
+    pinMode(LED_STASTE_PIN,OUTPUT);
+
+    rs_btn.setPressTicks(5000); // that is the time when LongPressStart is called
+    rs_btn.attachLongPressStop(btnLongPressHandle);
+    digitalWrite(LED_STASTE_PIN, HIGH);
     // Initialize SPIFFS
     if(!SPIFFS.begin(true)){
       Serial.println("An Error has occurred while mounting SPIFFS");
@@ -641,11 +655,12 @@ void setup()
     //Load Config 
     for(int i = 0; i < ROOM_NUMBER;i++){
         tm_delay[i] = eep.read(TIMER_DELAY_ADDR + i);
-        if(tm_delay[i] = 0xFF){
+        if(tm_delay[i] == 0xFF){
+            Serial.printf("Delay Slot is %d \n", tm_delay[i]);
             tm_delay[i] = 1;
             eep.write(TIMER_DELAY_ADDR + i, 1);
         } 
-        Serial.printf("Delay Slot %d: %d\n", i, tm_delay[i]);
+        else Serial.printf("Delay Slot %d: %d\n", i, tm_delay[i]);
     }
 
 
@@ -668,12 +683,12 @@ void setup()
     //     Serial.printf("Channel working: %d\n", channell);
     // }
     
-    uint16_t addr_start = 0x80;
-    for(int i = 0; i < 16; i++ ){
-        addr_start = addr_start + i*100;
-        Serial.printf("#define ROOM_%d_LENGTH_ADDR 0x%04X\n",i+1, addr_start);
-        Serial.printf("ROOM_%d_ADDRESS = 0x%04X\n",i+1, addr_start+12);
-    }
+    // uint16_t addr_start = 0x80;
+    // for(int i = 0; i < 16; i++ ){
+    //     addr_start = addr_start + i*100;
+    //     Serial.printf("#define ROOM_%d_LENGTH_ADDR 0x%04X\n",i+1, addr_start);
+    //     Serial.printf("ROOM_%d_ADDRESS = 0x%04X\n",i+1, addr_start+12);
+    // }
 
     // addr_start = 0x80;
     // for(int i = 0; i < 16; i++ ){
@@ -706,6 +721,7 @@ void setup()
     
     WebSetup();
     // test_write();
+
 }
 void uhf_read_user_data(){
     
@@ -756,13 +772,16 @@ void uhf_process(){
             if(!res){
                 delay(1000);
             }
+            else {
+                delay(2000);
+            }
         }
         else if(_mode == SAVE_TAGS){
             EasyBuzzer.singleBeep(
                         frequency, 	// Frequency in hertz(HZ).  
                         duration 	// Duration of the beep in milliseconds(ms). 
             );
-            delay(500);
+            delay(1500);
             EasyBuzzer.stopBeep();
             notifyTags(label.epc);
         }
@@ -777,11 +796,6 @@ void uhf_process(){
 
 void loop()
 {   
-    int a = 0;
-    a++;
-    if(a != 1){
-        
-    }
     delay(300);
     //delay(500);
     uhf_process();
@@ -793,10 +807,17 @@ void loop()
         ledState = !ledState;
         digitalWrite(ledPin, ledState);
     }
-    
+    if(_mode == NORMAL) {
+        digitalWrite(LED_STASTE_PIN, HIGH);
+    }
+    else {
+        ledMachineState = !ledMachineState;
+        digitalWrite(LED_STASTE_PIN, ledMachineState);
+    }
     /* Always call this function in the loop for EasyBuzzer to work. */
 	EasyBuzzer.update();
     // ws.cleanupClients();
+    rs_btn.tick();
 }
 
  

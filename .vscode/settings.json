@@ -16,6 +16,7 @@
         "*.tcc": "cpp",
         "istream": "cpp",
         "bitset": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "new": "cpp"
     }
 }

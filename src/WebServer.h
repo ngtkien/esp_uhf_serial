@@ -13,6 +13,7 @@ enum device_mote{
 extern AsyncWebSocket  ws;
 // Set LED GPIO
 extern bool ledState;
+extern bool ledMachineState;
 extern const int ledPin;
 // extern uint8_t delay1;
 // extern uint8_t delay2;
@@ -35,3 +36,6 @@ void notify_gain_msg();
 void notifyClients(String msg);
 void notifyInit();
 void notifyTags(uint8_t epc[12]);
+
+void cleanWifiStorage();
+bool deleteFile(fs::FS &fs, const char* path);
