@@ -429,12 +429,15 @@ void handle_finds_tags_storagre_index(DynamicJsonDocument json){
 
   search_result_t res;
   res =  eep_find_tags(byteArray);
-  Serial.printf("find tags: index_room: %d 0x%04X\n" ,res.index_room, res.addr_room);
+  Serial.printf("find tags: tags_index: %d, index_room: %d 0x%04X\n" ,res.index_in_room, res.index_room, res.addr_room);
   const uint8_t size = JSON_OBJECT_SIZE(3);
   StaticJsonDocument<size> msg;
   msg["action"] = "find_tags";
-  msg["index_room"] = res.index_room;
   msg["status"] = res.res;
+  if(res.res) {
+    msg["index_room"] = res.index_room;
+  }
+  
 
 
   char data[100];
@@ -453,12 +456,19 @@ void handle_delete_tags_storagre_index(DynamicJsonDocument json){
 
   bool res;
   res =  eep_delete_tags(byteArray);
-  // Serial.printf("find tags: index_room: %d 0x%04X\n" ,res.index_room, res.addr_room);
- 
+
+
   const uint8_t size = JSON_OBJECT_SIZE(2);
   StaticJsonDocument<size> msg;
   msg["action"] = "delete_tags";
   msg["status"] = res;
+
+
+    char data[100];
+    size_t len = serializeJson(msg, data);
+    Serial.printf("data send to web %s\n", data);
+    ws.textAll(data, len);
+
 }
 void notifyClients(String msg) {
   ws.textAll(msg);
