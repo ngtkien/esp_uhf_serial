@@ -47,7 +47,7 @@ byte epc_list[4][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0x6A, 0x1B}
 };
 
-
+byte temp_epcp[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0 , 0, 0, 0};
 byte room1[10][12] = {
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0xA8, 0x40},
     {0xE2, 0x80, 0x68, 0x94, 0x0,0x0, 0x40, 0x1A, 0x4D, 0x13, 0xA8, 0x41},
@@ -479,19 +479,19 @@ bool eep_erase_room(uint8_t index){
     return true;
 }
 uint16_t get_size_room(ROOM_ADDR room){
-    Serial.printf("Get size room: 0x%04X\n",room);
+    //Serial.printf("Get size room: 0x%04X\n",room);
     uint16_t lsb = 0,msb = 0;
     uint16_t size;
 
     uint16_t lsb_ind = room - 0xC + 1; 
     uint16_t msb_ind = room - 0xC;
-    Serial.printf("lsb_ind: 0x%04X, msb_ind: 0x%04X\n", lsb_ind,msb_ind);
+    //Serial.printf("lsb_ind: 0x%04X, msb_ind: 0x%04X\n", lsb_ind,msb_ind);
     lsb = eep.read(lsb_ind);
     msb = eep.read(msb_ind);
 
     size = ( (msb & 0xFF) << 8 ) | (lsb & 0x00FF);
     if(size == 0xFFFF) size = 0;
-    Serial.printf("ROOM: 0x%04X, size:  %d\n",room, size);
+    //Serial.printf("ROOM: 0x%04X, size:  %d\n",room, size);
     return size;
 }
 void decrease_size_room(ROOM_ADDR room){
@@ -580,10 +580,10 @@ search_result_t search_in_flash(uint8_t input[], ROOM_ADDR room){
     result = search_by_address(input, room,num_of_search);
     
     if(result.res){
-        Serial.printf("Find in ROOM 0x%04X\n", room);
+        //Serial.printf("Find in ROOM 0x%04X\n", room);
     }
     else {
-        Serial.println("Not find in flash");
+       // Serial.println("Not find in flash");
     }
     return result;
 }
@@ -626,6 +626,25 @@ void btnLongPressHandle(){
     cleanWifiStorage();
     resetFunc();
 }
+void buttonHandle(void *pvParameters){
+    // void *pvParameters;
+    Serial.println(xPortGetCoreID());
+    while(true){
+        /* Always call this function in the loop for EasyBuzzer to work. */
+        EasyBuzzer.update();
+        // ws.cleanupClients();
+        rs_btn.tick();
+        delay(100);
+    }
+}
+void readerHandle(void *pvParameters){
+    Serial.println(xPortGetCoreID());
+    while(true){
+        uhf_process();
+        delay(200);
+    }
+
+}
 void setup()
 {
     
@@ -662,7 +681,7 @@ void setup()
     }
 
 
-    
+    // xTaskCreatePinnedToCore
 
     rfc.begin();
     
@@ -719,7 +738,11 @@ void setup()
     
     WebSetup();
     // test_write();
-
+    xTaskCreatePinnedToCore(buttonHandle, "buttonTask", 1024, NULL, 3, NULL, ARDUINO_RUNNING_CORE);
+    
+    xTaskCreatePinnedToCore(readerHandle, "readerTask", 2048, NULL, 3, NULL, ARDUINO_RUNNING_CORE);
+    
+    vTaskStartScheduler();
 }
 void uhf_read_user_data(){
     
@@ -731,17 +754,42 @@ void t2Callback() {
   
 }
 
+
+bool verify_task (uint8_t input[]) 
+{   uint8_t i;
+    uint8_t count = 0;
+    for ( i = 0; i < 11; i++) {
+        if(input[i] == temp_epcp[i]) {
+            count++;
+        }
+    }
+    Serial.printf("Count: %d\n", count);
+    if(count == 11) {
+        Serial.println("Old tags\n");
+        return true;
+    }
+    Serial.println("New tags\n");
+    for ( i = 0; i < 12; i++){
+        temp_epcp[i] = input[i];
+    }
+    return false;
+}
 void uhf_process(){
     Inventory_t label = rfc.GetLabelOnce();
     if (!rfc.error.isValid() && rfc.inventory.isValid())
     {
-        Serial.printf("RSSI : %d dB\nPC : %02X\nCRC : %02X\n", (int8_t)label.RSSI,label.PC,label.CRC);
+        Serial.printf("RSSI: %d dB PC: %02X CRC: %02X\n", (int8_t)label.RSSI,label.PC,label.CRC);
         Serial.print("EPC : ");
         for (int i = 0; i < 12; i++)
         {
             Serial.printf("%02X", label.epc[i], HEX);
         }
         Serial.println();
+
+        if(verify_task(label.epc)) {
+            delay(1000);
+            return;
+        }
         
         if(_mode == NORMAL){
             //Mode normal
@@ -796,26 +844,23 @@ void loop()
 {   
     delay(300);
     //delay(500);
-    uhf_process();
+    // uhf_process();
 
-    if(WiFi.isConnected()){
+    // if(WiFi.isConnected()){
 
-    }
-    else {
-        ledState = !ledState;
-        digitalWrite(ledPin, ledState);
-    }
-    if(_mode == NORMAL) {
-        digitalWrite(LED_STASTE_PIN, HIGH);
-    }
-    else {
-        ledMachineState = !ledMachineState;
-        digitalWrite(LED_STASTE_PIN, ledMachineState);
-    }
-    /* Always call this function in the loop for EasyBuzzer to work. */
-	EasyBuzzer.update();
-    // ws.cleanupClients();
-    rs_btn.tick();
+    // }
+    // else {
+    //     ledState = !ledState;
+    //     digitalWrite(ledPin, ledState);
+    // }
+    // if(_mode == NORMAL) {
+    //     digitalWrite(LED_STASTE_PIN, HIGH);
+    // }
+    // else {
+    //     ledMachineState = !ledMachineState;
+    //     digitalWrite(LED_STASTE_PIN, ledMachineState);
+    // }
+
 }
 
  
