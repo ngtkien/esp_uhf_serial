@@ -846,20 +846,20 @@ void loop()
     //delay(500);
     // uhf_process();
 
-    // if(WiFi.isConnected()){
+    if(WiFi.isConnected()){
 
-    // }
-    // else {
-    //     ledState = !ledState;
-    //     digitalWrite(ledPin, ledState);
-    // }
-    // if(_mode == NORMAL) {
-    //     digitalWrite(LED_STASTE_PIN, HIGH);
-    // }
-    // else {
-    //     ledMachineState = !ledMachineState;
-    //     digitalWrite(LED_STASTE_PIN, ledMachineState);
-    // }
+    }
+    else {
+        ledState = !ledState;
+        digitalWrite(ledPin, ledState);
+    }
+    if(_mode == NORMAL) {
+        digitalWrite(LED_STASTE_PIN, HIGH);
+    }
+    else {
+        ledMachineState = !ledMachineState;
+        digitalWrite(LED_STASTE_PIN, ledMachineState);
+    }
 
 }
 
