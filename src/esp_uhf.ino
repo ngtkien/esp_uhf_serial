@@ -758,13 +758,13 @@ void t2Callback() {
 bool verify_task (uint8_t input[]) 
 {   uint8_t i;
     uint8_t count = 0;
-    for ( i = 0; i < 11; i++) {
+    for ( i = 0; i < 12; i++) {
         if(input[i] == temp_epcp[i]) {
             count++;
         }
     }
     Serial.printf("Count: %d\n", count);
-    if(count == 11) {
+    if(count == 12) {
         Serial.println("Old tags\n");
         return true;
     }
