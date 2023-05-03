@@ -640,10 +640,31 @@ void buttonHandle(void *pvParameters){
 void readerHandle(void *pvParameters){
     Serial.println(xPortGetCoreID());
     while(true){
-        uhf_process();
-        delay(200);
+
+        if(WiFi.isConnected()){
+
+        }
+        else {
+            ledState = !ledState;
+            digitalWrite(ledPin, ledState);
+        }
+        if(_mode == NORMAL) {
+            digitalWrite(LED_STASTE_PIN, HIGH);
+        }
+        else {
+            ledMachineState = !ledMachineState;
+            digitalWrite(LED_STASTE_PIN, ledMachineState);
+        }
+        delay(300);
     }
 
+}
+
+void webHandler(void *pvParameters){
+    // WebSetup();
+    // while(true) {
+    //     delay(5000);
+    // }
 }
 void setup()
 {
@@ -730,19 +751,27 @@ void setup()
     
     EasyBuzzer.setPin(18);
     
-    EasyBuzzer.singleBeep(
+   
+    
+    WebSetup();
+    // test_write();
+
+     EasyBuzzer.singleBeep(
 		frequency, 	// Frequency in hertz(HZ).  
 		duration, 	// Duration of the beep in milliseconds(ms). 
 		buzzer_done		// [Optional] Function to call when done.
 	);
     
-    WebSetup();
-    // test_write();
-    xTaskCreatePinnedToCore(buttonHandle, "buttonTask", 1024, NULL, 3, NULL, ARDUINO_RUNNING_CORE);
+    xTaskCreatePinnedToCore(buttonHandle, "buttonTask", 2048, NULL, 3, NULL, ARDUINO_RUNNING_CORE);
     
-    xTaskCreatePinnedToCore(readerHandle, "readerTask", 2048, NULL, 3, NULL, ARDUINO_RUNNING_CORE);
+    xTaskCreatePinnedToCore(readerHandle, "readerTask", 2048, NULL, 4, NULL, ARDUINO_RUNNING_CORE);
     
+
+    // xTaskCreatePinnedToCore(webHandler, "webTask", 4000, NULL, 2, NULL, ARDUINO_RUNNING_CORE);
+
     vTaskStartScheduler();
+
+
 }
 void uhf_read_user_data(){
     
@@ -785,6 +814,12 @@ void uhf_process(){
             Serial.printf("%02X", label.epc[i], HEX);
         }
         Serial.println();
+        EasyBuzzer.singleBeep(
+                        frequency, 	// Frequency in hertz(HZ).  
+                        duration, 	// Duration of the beep in milliseconds(ms). 
+                        buzzer_done
+                    );
+        delay(500);
 
         if(verify_task(label.epc)) {
             delay(1000);
@@ -799,17 +834,12 @@ void uhf_process(){
                 if(res.res) {
                     Serial.printf("Find in Room address 0x%04X, i: %d\n", table[i],i);
                     //TODO: On Relay 
-                    //
-                    // EasyBuzzer.singleBeep(
-                    //     frequency, 	// Frequency in hertz(HZ).  
-                    //     duration, 	// Duration of the beep in milliseconds(ms). 
-                    //     buzzer_done		// [Optional] Function to call when done.
-                    // );
                     EasyBuzzer.singleBeep(
                         frequency, 	// Frequency in hertz(HZ).  
-                        duration 	// Duration of the beep in milliseconds(ms). 
+                        duration, 	// Duration of the beep in milliseconds(ms). 
+                        buzzer_done
                     );
-                    delay(500);
+                    delay(300);
                     EasyBuzzer.stopBeep();
                     onLed(table[i]);
                     break;
@@ -825,7 +855,8 @@ void uhf_process(){
         else if(_mode == SAVE_TAGS){
             EasyBuzzer.singleBeep(
                         frequency, 	// Frequency in hertz(HZ).  
-                        duration 	// Duration of the beep in milliseconds(ms). 
+                        duration, 	// Duration of the beep in milliseconds(ms). 
+                        buzzer_done
             );
             delay(1500);
             EasyBuzzer.stopBeep();
@@ -835,32 +866,15 @@ void uhf_process(){
     }
     else
     {
-       Serial.printf("Error Code: %X\n", rfc.error.ErrorCode());
-       delay(500);
+       Serial.printf("Scanning....., Error Code: %X\n", rfc.error.ErrorCode());
+       delay(10);
     }
 }
 
 void loop()
 {   
-    delay(300);
-    //delay(500);
-    // uhf_process();
-
-    if(WiFi.isConnected()){
-
-    }
-    else {
-        ledState = !ledState;
-        digitalWrite(ledPin, ledState);
-    }
-    if(_mode == NORMAL) {
-        digitalWrite(LED_STASTE_PIN, HIGH);
-    }
-    else {
-        ledMachineState = !ledMachineState;
-        digitalWrite(LED_STASTE_PIN, ledMachineState);
-    }
-
+    uhf_process();
+   
 }
 
  

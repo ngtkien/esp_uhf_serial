@@ -654,30 +654,7 @@ bool initWiFi() {
 
 void WebSetup(){
 
-    // Connect to Wi-Fi
-    // WiFi.begin(ssid1, password1);
-    // while (WiFi.status() != WL_CONNECTED) {
-    //   delay(1000);
-    //   Serial.println("Connecting to WiFi..");
-    // }
 
-    // // Print ESP32 Local IP Address
-    // Serial.println(WiFi.localIP());
-
-    // // Route for root / web page
-    // server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    //   request->send(SPIFFS, "/index.html", String(), false, processor);
-    // });
-    // //Route to load style.css file
-    // server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    //   request->send(SPIFFS, "/styles.css", "text/css");
-    // });
-
-    
-    // initWebSocket();
-    // // Start server
-    // server.begin();
-    // Load values saved in SPIFFS
     ssid = readFile(SPIFFS, ssidPath);
     pass = readFile(SPIFFS, passPath);
     ip = readFile(SPIFFS, ipPath);
@@ -764,4 +741,5 @@ void WebSetup(){
       });
       server.begin();
     }
+
 }
