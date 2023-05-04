@@ -546,7 +546,7 @@
           else {
             document.getElementById('led_state').innerHTML = "ĐANG TẮT";
           }
-          document.getElementById('gain').innerHTML = data.gain;
+          //document.getElementById('gain').innerHTML = data.gain;
           //document.getElementById("function").innerHTML = data.mode;
           if(data.mode == "Normal"){
             document.getElementById("function").innerHTML = "Điều Khiển Hệ Thống";
@@ -574,7 +574,7 @@
           }
         }
         if(data.action == "get_gain"){
-          document.getElementById('gain').innerHTML = data.gain;
+          //document.getElementById('gain').innerHTML = data.gain;
         }
         if(data.action == "change_mode"){
           if(data.mode == "Normal"){

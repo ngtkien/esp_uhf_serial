@@ -5,12 +5,8 @@
 #include "OneButton.h"
 unsigned int frequency = 1000;
 unsigned int duration = 300;
-// #include "RF_Commands.h"
-// #include "HardwareSerial.h"
-// #include <Wire.h>
-// #include <extEEPROM.h>
-// #include <Mux.h>
-// #include "WebServer.h"
+
+unsigned int wifi_manger_en = 0;
 
 using namespace admux;
 
@@ -626,6 +622,10 @@ void btnLongPressHandle(){
     cleanWifiStorage();
     resetFunc();
 }
+void btnClick(){
+    Serial.println("btnClick");
+    wifi_manger_en = 1;
+}
 void buttonHandle(void *pvParameters){
     // void *pvParameters;
     Serial.println(xPortGetCoreID());
@@ -678,6 +678,8 @@ void setup()
 
     rs_btn.setPressTicks(5000); // that is the time when LongPressStart is called
     rs_btn.attachLongPressStop(btnLongPressHandle);
+    rs_btn.attachClick(btnClick);
+
     digitalWrite(LED_STASTE_PIN, HIGH);
     // Initialize SPIFFS
     if(!SPIFFS.begin(true)){
@@ -687,6 +689,8 @@ void setup()
     else {
       Serial.println("Access to SPIFFS success");
     }
+
+    //Flash init 
     flashInit();
 
 
@@ -873,8 +877,8 @@ void uhf_process(){
 
 void loop()
 {   
+
     uhf_process();
-   
 }
 
  
