@@ -192,8 +192,10 @@ uint8_t get_gain(){
   return Gain;
 }
 void set_gain_handle(DynamicJsonDocument json){
+
    Gain = (RFC_Class::PaPower)json["gain"].as<int>();
    Serial.printf("Set gain: %d", Gain);
+
    rfc.SetPaPowerFrame(Gain);
    uint16_t _Gain = rfc.GetPaPowerFrame();
    Serial.printf("Power: %d\n", _Gain);
@@ -247,6 +249,7 @@ void handle_get_delay(){
     Serial.printf("data send to web %s\n", data);
     ws.textAll(data, len);
 }
+
 //message 
 void notify_led_msg(){
   const uint8_t size = JSON_OBJECT_SIZE(2);
@@ -268,6 +271,8 @@ void notify_gain_msg(){
     Serial.printf("data send to web %s\n", data);
     ws.textAll(data, len);
 }
+
+//TODO: notifyInit
 void notifyInit() {
     Serial.println("Send msg init");
     const uint8_t size = JSON_OBJECT_SIZE(5);
@@ -319,6 +324,8 @@ void notifyTags(uint8_t epc[12]){
     ws.textAll(data, len);
 }
 
+/// @brief 
+/// @param json 
 void handle_erase_storage(DynamicJsonDocument json){
     bool res; 
     //TODO: eep_erase_room(json["room"].as<int>());
@@ -332,6 +339,8 @@ void handle_erase_storage(DynamicJsonDocument json){
     Serial.printf("data send to web %s\n", data);
     ws.textAll(data, len);
 }
+/// @brief 
+/// @param json 
 void handle_get_storage(DynamicJsonDocument json){
   //TODO: eep_get_room();
     ROOM_ADDR room;
@@ -505,13 +514,13 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         else if(strcmp(action, "set_gain") == 0 ){
             Serial.printf("set pow");
             set_gain_handle(json);
-            //notifyMsg();
+            // notifyMsg();
         }
         else if(strcmp(action, "save_tags") == 0 ){
             Serial.printf("Save\n");
             //TODO Save Tags
             hanle_save_tags(json);
-            //notifyMsg();
+            // notifyMsg();
         }
         else if(strcmp(action, "change_mode") == 0){
             Serial.printf("mode toggle\n");
@@ -549,6 +558,7 @@ void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType 
     case WS_EVT_CONNECT:
       Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
       notifyInit();
+      handle_get_delay();
       break;
     case WS_EVT_DISCONNECT:
       Serial.printf("WebSocket client #%u disconnected\n", client->id());

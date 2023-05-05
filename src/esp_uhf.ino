@@ -713,10 +713,10 @@ void setup()
     // mux.write(HIGH,0);
     Gain = rfc.GetPaPowerLevelFrame();
     Serial.printf("Power Level: %d\n", Gain);
-    rfc.SetFHSSFrame(false);
-    rfc.SetRegionFrame(1);
-    //Setup China 1 -> 920.125M
-    rfc.SetRfChannelFrame(13);
+    // rfc.SetFHSSFrame(false);
+    // rfc.SetRegionFrame(1);
+    // //Setup China 1 -> 920.125M
+    // rfc.SetRfChannelFrame(13);
     
     // for(int i = 0; i < 100; i++ ){
     //     rfc.SetRfChannelFrame(i);

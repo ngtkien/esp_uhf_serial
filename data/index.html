@@ -184,7 +184,7 @@
                     <div class="d-flex align-items-center"> <h3 style="min-height: 40px;">Thiết lập khoảng cách cho đầu đọc</h3>
                     </div>
                     <div class="d-flex align-items-baseline">
-                      <!-- <div class="h4 mb-3 me-2">
+                      <div class="h4 mb-3 me-2">
                         <p style="position:relative; left:30px; ">Mức Độ lợi Ăn-ten: <strong><span id="gain">-</span></strong></p>
                         <button id="button_pow" class="button" style="position: relative; left:100px ">Đọc độ lợi</button>
                         <form>
@@ -198,7 +198,7 @@
                           </select>
                         </form>
                         <button style="position: relative; top: 40px; left:60%" id="set_pow" class="button">Cài đặt độ lợi</button>
-                      </div> -->
+                      </div> 
                     </div>
                   </div>
                   <div class="card-body" style="position: relative;">
@@ -307,9 +307,7 @@
                          </form>
                          <button id="btn_erase" class="button" style="position: relative; top: 80px; right: 110px">Xóa ô nhớ</button>
                       </div>  
-                      <div class="d-flex align-items-baseline" style="min-height: 150px;">
-                        
-                         
+                      <div class="d-flex align-items-baseline" style="min-height: 150px;">                       
                          <form >
                           <label  style="position:relative; left:30px; top: 30px" for="room">Chọn ô nhớ để xem số lượng thẻ đang lưu</label>
                           <select id="get_storage" style="position:relative;top:0px;left:80px; top: 30px">
@@ -331,13 +329,11 @@
                             <option value=15>15</option>
                             <option value=16>16</option> 
                           </select>
-                          </form><br>
-                          
+                          </form><br>                         
                           <label>
                             <input class="input" type="text" id ="storage_size" type="text" minlength="12" maxlength="12" size="12" style="position:relative; left:-80px; top:80px; ">
                           </label>
                           <button id="btn_get_storage" class="button" style="position: relative; top: 120px; left:-50px">Kiểm tra</button>
-                          
                       </div>  
                     </div>
                   </div>
@@ -546,7 +542,7 @@
           else {
             document.getElementById('led_state').innerHTML = "ĐANG TẮT";
           }
-          //document.getElementById('gain').innerHTML = data.gain;
+          document.getElementById('gain').innerHTML = data.gain;
           //document.getElementById("function").innerHTML = data.mode;
           if(data.mode == "Normal"){
             document.getElementById("function").innerHTML = "Điều Khiển Hệ Thống";
@@ -574,7 +570,7 @@
           }
         }
         if(data.action == "get_gain"){
-          //document.getElementById('gain').innerHTML = data.gain;
+          document.getElementById('gain').innerHTML = data.gain;
         }
         if(data.action == "change_mode"){
           if(data.mode == "Normal"){
@@ -666,6 +662,8 @@
         document.getElementById('button_beep').addEventListener('click',on_buzzer);
         document.getElementById('btn_find_tags').addEventListener('click',finds_tags_storage_index);
         document.getElementById('btn_delete_tags').addEventListener('click',delete_tags_storage_index);
+        document.getElementById('set_pow').addEventListener('click', set_gain);
+        document.getElementById('button_pow').addEventListener('click', get_gain)
       }
 
       //TODO: send backend -> toggle led
@@ -713,6 +711,8 @@
         console.log("epc: " + epc + " storage: " + selectedValue);
         websocket.send(JSON.stringify({'action':'save_tags','epc':epc,'room':parseInt(selectedValue)}));
       }
+
+
       function delay_set(){
         
         var delay1 =  document.getElementById('delay_input1').value;
