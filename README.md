@@ -25,6 +25,8 @@ uint8_t epc_list[4][12] = {
 
 ### Update   
   
-  Lưu các trạng thái của devices vào flash. Đọc lại khi device được RESET
+Lưu các trạng thái của devices vào flash. Đọc lại khi device được RESET
+
     - Delay time của tứng slot. 
+
     - Khoảng cách đọc của đầu đọc ( get trực tiếp từ đầu đọc khi devices RESET )
