@@ -49,7 +49,7 @@ const int ledPin = 2;
 #define NUM_GATE 16
 bool ledState = 0;
 bool ledMachineState = 0;
-RFC_Class::PaPower Gain = RFC_Class::PaPower::G_1550;
+RFC_Class::PaPower Gain = RFC_Class::PaPower::G_2600;
 // uint8_t delay1=1,delay2=1,delay3=1,delay4=1,delay5=1;
 uint8_t tm_delay[NUM_GATE] =  {0};
 // Create AsyncWebServer object on port 80
@@ -197,8 +197,10 @@ void set_gain_handle(DynamicJsonDocument json){
    Serial.printf("Set gain: %d", Gain);
 
    rfc.SetPaPowerFrame(Gain);
-   uint16_t _Gain = rfc.GetPaPowerFrame();
-   Serial.printf("Power: %d\n", _Gain);
+   eep.write(0x00, Gain);
+   
+  //  uint16_t _Gain = rfc.GetPaPowerFrame();
+   Serial.printf("Power: %d\n", Gain);
    const uint8_t size = JSON_OBJECT_SIZE(2);
     StaticJsonDocument<size> msg;
     msg["action"] = "set_gain";

@@ -243,7 +243,7 @@ uint16_t RFC_Class::GetPaPowerFrame()
     return power.PaPower();
 }
 RFC_Class::PaPower RFC_Class::GetPaPowerLevelFrame(){
-    RFC_Class::PaPower pwer = G_2250;
+    RFC_Class::PaPower pwer = G_2600;
     SendFrame(BuildFrame(0X00, 0XB7));
     if (!waitAckDone())
     {
@@ -253,10 +253,16 @@ RFC_Class::PaPower RFC_Class::GetPaPowerLevelFrame(){
     uint32_t Millis = millis();
     while (!power.isUpdated())
     {
-        if (millis() - Millis > 100)
+
+        if (millis() - Millis > 100){
+            Serial.println("power is not update");
             return RFC_Class::PaPower::G_2250;
+        }
+            
     }
-    switch (power.PaPower())
+    int pow = power.PaPower();
+    Serial.printf("pow index= %d\n", pow);
+    switch (pow)
     {
     case 2600:
         /* code */

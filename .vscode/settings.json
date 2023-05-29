@@ -17,6 +17,7 @@
         "istream": "cpp",
         "bitset": "cpp",
         "random": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "*.bk": "cpp"
     }
 }

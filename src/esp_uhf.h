@@ -8,7 +8,7 @@
 #include <Mux.h>
 #include "WebServer.h"
 
-
+ #define PA_POWER 0x00
 // typedef enum {
 //   ROOM_1_ADDRESS = 0x008C,
 //   ROOM_2_ADDRESS = 0x00F0,

@@ -711,13 +711,16 @@ void setup()
     rfc.begin();
     
     // mux.write(HIGH,0);
-    Gain = rfc.GetPaPowerLevelFrame();
+    // Gain = rfc.GetPaPowerLevelFrame();
+    Gain = eep.read(PA_POWER);
+    if(Gain > 10) Gain = 0;
     Serial.printf("Power Level: %d\n", Gain);
     // rfc.SetFHSSFrame(false);
-    // rfc.SetRegionFrame(1);
-    // //Setup China 1 -> 920.125M
-    // rfc.SetRfChannelFrame(13);
     
+    // //Setup China 1 -> 920.125M
+    
+    rfc.SetRegionFrame(REGION_CODE_CHN1);
+    rfc.SetRfChannelFrame(0);
     // for(int i = 0; i < 100; i++ ){
     //     rfc.SetRfChannelFrame(i);
 
@@ -808,6 +811,9 @@ bool verify_task (uint8_t input[])
     return false;
 }
 void uhf_process(){
+    // while (SerialRF.available())
+    //     rfc.encode(SerialRF.read());
+
     Inventory_t label = rfc.GetLabelOnce();
     if (!rfc.error.isValid() && rfc.inventory.isValid())
     {
@@ -871,7 +877,7 @@ void uhf_process(){
     else
     {
        Serial.printf("Scanning....., Error Code: %X\n", rfc.error.ErrorCode());
-       delay(10);
+       delay(50);
     }
 }
 

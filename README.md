@@ -27,6 +27,10 @@ uint8_t epc_list[4][12] = {
   
 Lưu các trạng thái của devices vào flash. Đọc lại khi device được RESET
 
-    - Delay time của tứng slot. 
+ - Delay time của tứng slot. 
 
-    - Khoảng cách đọc của đầu đọc ( get trực tiếp từ đầu đọc khi devices RESET )
+ - Khoảng cách đọc của đầu đọc ( get trực tiếp từ đầu đọc khi devices RESET )
+
+Tối ưu lưu trữ tags
+ - MỞ rộng không gian lưu trữ tron eeprom ( khoảng 100 tags mỗi slot)
+ - Fix bugs ghi trùng thẻ vào eeprom
