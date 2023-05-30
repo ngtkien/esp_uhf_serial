@@ -119,7 +119,7 @@ void onLed(ROOM_ADDR room){
     for(int i = 0; i < ROOM_NUMBER; i++ ){
         if(room == table[i]){
             mux.write(LOW, i);
-            delay(tm_delay[i]*1000);
+            delay(200);
             mux.write(HIGH, i);
         }
     }
@@ -851,6 +851,7 @@ void uhf_process(){
                     );
                     delay(300);
                     EasyBuzzer.stopBeep();
+                    delay(tm_delay[i]*1000);
                     onLed(table[i]);
                     break;
                 }
