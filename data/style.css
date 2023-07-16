@@ -111,6 +111,8 @@ button {
   width: 100px;
   border-radius: 4px;
   transition-duration: 0.4s;
+  display: block;
+  margin: auto;
 }
 .button-on {
   background-color: #034078;
