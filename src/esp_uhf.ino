@@ -721,6 +721,11 @@ void setup()
     
     rfc.SetRegionFrame(REGION_CODE_CHN1);
     rfc.SetRfChannelFrame(0);
+    Serial.println("=======================================");
+    Serial.printf("Reader Gain: %d\n", rfc.GetPaPowerFrame());
+    Serial.printf("Reader region: %d\n", rfc.GetRegionFrame());
+    Serial.printf("Channel: %d\n", rfc.GetRfChannelFrame());
+    Serial.println("====================================================");
     // for(int i = 0; i < 100; i++ ){
     //     rfc.SetRfChannelFrame(i);
 
@@ -745,10 +750,10 @@ void setup()
     // rfc.SetRegionFrame(2);
 
 
-    int channel = rfc.GetRfChannelFrame();
-    Serial.printf("Channel working: %d\n", channel);
-    int region = rfc.GetRegionFrame();
-    Serial.printf("Region: %d\n", region);
+    // int channel = rfc.GetRfChannelFrame();
+    // Serial.printf("Channel working: %d\n", channel);
+    // int region = rfc.GetRegionFrame();
+    // Serial.printf("Region: %d\n", region);
     
     
     
