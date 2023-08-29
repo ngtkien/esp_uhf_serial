@@ -38,4 +38,6 @@ void notifyInit();
 void notifyTags(uint8_t epc[12]);
 
 void cleanWifiStorage();
+// Write file to SPIFFS
+void writeFile(fs::FS &fs, const char * path, const char * message);
 bool deleteFile(fs::FS &fs, const char* path);

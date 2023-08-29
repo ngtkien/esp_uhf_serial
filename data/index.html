@@ -165,13 +165,13 @@
 
                       <h4>Trạng thái đèn LED</h4>
                       <span id="led_state">-</span>
-                      <p><button id="button" class="button">Bật/Tắt đèn LED</button></p>
+                      <p><button id="button" class="btn btn-primary">Bật/Tắt đèn LED</button></p>
                       
                       <h4>Điều khiển còi</h4>
-                      <p><button id="button_beep" class="button">Beep</button></p>
+                      <p><button id="button_beep" class="btn btn-primary">Beep</button></p>
                       <!-- <p >Độ trễ: <span id="delay">-</span>giây</p>
                       Thiết lập độ trễ: 
-                      <button style="position: relative; top: 34px; left: 0px;" id="delay_set" class="button">Set</button>
+                      <button style="position: relative; top: 34px; left: 0px;" id="delay_set" class="btn btn-primary">Set</button>
                       <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input" minlength="2" maxlength="2" size="5" > 
                       -->
                     </div>
@@ -186,7 +186,7 @@
                     <div class="d-flex align-items-baseline">
                       <div class="h4 mb-3 me-2">
                         <p style="position:relative; left:30px; ">Mức Độ lợi Ăn-ten: <strong><span id="gain">-</span></strong></p>
-                        <button id="button_pow" class="button" style="position: relative; left:100px ">Đọc độ lợi</button>
+                        <button id="button_pow" class="btn btn-primary" style="position: relative; left:100px ">Đọc độ lợi</button>
                         <form>
                           <p><label style="position:relative; left:30px; top: 20px;"><strong>Thiết lập độ lợi:</strong></label></p>
                           <select style="position:relative; left:55px; top: 20px" id="gain_set">
@@ -197,7 +197,7 @@
                           <option value=3>3</option>
                           </select>
                         </form>
-                        <button style="position: relative; top: 40px; left:60%" id="set_pow" class="button">Cài đặt độ lợi</button>
+                        <button style="position: relative; top: 40px; left:60%" id="set_pow" class="btn btn-primary">Cài đặt độ lợi</button>
                       </div> 
                     </div>
                   </div>
@@ -249,14 +249,14 @@
                             </select>
                             
                           </form><br>
-                          <button id="btn_save" class="button" style="position: relative; top: 170px; right: 100px">Lưu</button>
+                          <button id="btn_save" class="btn btn-primary" style="position: relative; top: 170px; right: 100px">Lưu</button>
                            
                            
                         </div>
                         <div class="d-flex align-items-baseline" style="min-height: 200px;">
                           <p><lable style="position:relative; top: 60px; left:30px; ">Ô đang chứa: <input class="input" type="text" id ="epc_tag_storage" type="text" minlength="24" maxlength="24" size="30" name="epc_tag_storage" style="position:relative; left: 10px; top:30px; "></lable></p>
-                          <p><button id="btn_find_tags" class="button" style="position: relative; top: 90px; left:50px;">Tìm</button>
-                          <p><button id="btn_delete_tags" class="button" style="position: relative; top: 90px; left:60px;">Xóa Thẻ</button>
+                          <p><button id="btn_find_tags" class="btn btn-primary" style="position: relative; top: 90px; left:50px;">Tìm</button>
+                          <p><button id="btn_delete_tags" class="btn btn-primary" style="position: relative; top: 90px; left:60px;">Xóa Thẻ</button>
                           </p>
                         </div>
                       </div>
@@ -280,7 +280,8 @@
               <div class="col-lg-6">
                 <a class="card card-sponsor target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
                   <div class="position-relative">
-                    <div class="card-body" style="min-height: 280px; "><h2 style="min-height: 40px;">Quản lý bộ nhớ</h2>
+                    <div class="card-body" style="min-height: 280px; ">
+                      <h2 style="min-height: 40px;">Quản lý bộ nhớ</h2>
                       
                       <div class="d-flex align-items-baseline" style="min-height: 150px;">
                         <form >
@@ -305,7 +306,7 @@
                           <option value=16>16</option> 
                           </select>
                          </form>
-                         <button id="btn_erase" class="button" style="position: relative; top: 80px; right: 110px">Xóa ô nhớ</button>
+                         <button id="btn_erase" class="btn btn-primary" style="position: relative; top: 80px; right: 110px">Xóa ô nhớ</button>
                       </div>  
                       <div class="d-flex align-items-baseline" style="min-height: 150px;">                       
                          <form >
@@ -331,22 +332,44 @@
                           </select>
                           </form><br>                         
                           <label>
-                            <input class="input" type="text" id ="storage_size" type="text" minlength="12" maxlength="12" size="12" style="position:relative; left:-80px; top:80px; ">
+                            <input class="input" type="text" id ="storage_size" type="text" minlength="12" maxlength="12" size="12" style="position:relative; left:-80px; top:60px; ">
                           </label>
-                          <button id="btn_get_storage" class="button" style="position: relative; top: 120px; left:-50px">Kiểm tra</button>
-                      </div>  
+                          <button id="btn_get_storage" class="btn btn-primary"  style="position: relative; top: 60px; left:-50px">Kiểm tra</button>
+                    </div>
+                    <style>
+                      .divider {
+                          border-top: 1px solid black;
+                          margin-top: 20px;
+                          margin-bottom: 20px;
+                      }
+                    </style>
+                  
+                    <div class="divider"></div>
+                    <div class="card-body" style="min-height: 280px; ">
+                      <h2 style="min-height: 40px;"> Cập nhật WIFI</h2>
+                      <div class="form-group">
+                        <label for="ssid">SSID:</label>
+                        <input type="text" class="form-control" id="ssid" placeholder="Enter SSID">
+                      </div>
+                      <div class="form-group">
+                          <label for="password">Password:</label>
+                          <input type="password" class="form-control" id="password" placeholder="Enter password">
+                      </div>
+                      <button style="margin-top: 20px;" type="button" class="btn btn-primary" id="update_wifi" >Update</button>
+
                     </div>
                   </div>
-                </a>
-              </div>
-              <div class="col-sm-5 col-lg-6">
-                <a class="card card-sponsor" target="_blank" rel="noopener" aria-label="Sponsor Tabler!">
-                  <div class="row">
-                    <h3 style="min-height: 40px; position: center;">Thiết lập độ trễ đóng mở khay sau khi quẹt thẻ</h3>  
+                </div>
+              </a>
+            </div>
+              <div class="col-sm-5 col-lg-6" >
+                <a class="card card-sponsor" target="_blank" rel="noopener" aria-label="Sponsor Tabler!" >
+                  <div class="row" style="text-align: center;">
+                    <h3 style="min-height: 40px; position: center; margin-top: 10px;" >Thiết lập độ trễ đóng mở khay sau khi quẹt thẻ</h3>  
                     <label>Độ trễ cho từng khay tương ứng với số thứ tự</label>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-6" style="position: right;">
+                  </div style="margin-top: 10px;">
+                  <div class="row" style="text-align: center;">
+                    <div class="col-sm-6" style="position: right; ">
                       <center>
                             <p>Độ trễ 1: <span id="delay1">1</span> giây
                               <input style="position: relative; top: 10px" type="text" class="form-control form-control-sm" id="delay_input1" minlength="2" maxlength="2" size="5"> 
@@ -409,8 +432,12 @@
 
                     </div>
                   </div>
-                  <button style="position: center; top: 10px; left: 100px;" id="delay_set" class="button">Cài đặt độ trễ</button>
-                  <button style="position: center; top: 10px; left: 100px;" id="delay_get" class="button">Đọc độ trễ hiện tại</button>
+                  <div style="text-align: center; margin-bottom: 20px; margin-top: 10px;">
+                    <button style="position: center; top: 10px; left: 100px;" id="delay_set" class="btn btn-primary">Cài đặt độ trễ</button>
+                    <button style="position: center; top: 10px; left: 100px;" id="delay_get" class="btn btn-primary">Đọc độ trễ hiện tại</button>
+                  </div>
+                  
+                  
                 </a>
               </div>
 
@@ -654,6 +681,14 @@
             alert("Xóa thẻ không thành công");
           }
         }
+        if(data.action == "update_wifi"){
+          if(data.status){
+            alert("Cập nhật wifi thành công. Thiết bị khởi động lại sau 3 giấy");
+          }
+          else {
+            alert("Cập nhật không thành công");
+          }
+        } 
       }
       function onLoad(event) {
         initWebSocket();
@@ -664,7 +699,7 @@
         document.getElementById('button').addEventListener('click', toggle_led);
         document.getElementById('btn_save').addEventListener('click', save_tags);
         document.getElementById('fn_normal').addEventListener('click', change_fn);
-        document.getElementById('delay_set').addEventListener('click',delay_set);
+        document.getElementById('delay_set').addEventListener('click',fn_delay_set);
         document.getElementById('delay_get').addEventListener('click',delay_get);
         document.getElementById('btn_erase').addEventListener('click',erase_strage_fn);
         document.getElementById('btn_get_storage').addEventListener('click',get_strage_fn);
@@ -672,7 +707,8 @@
         document.getElementById('btn_find_tags').addEventListener('click',finds_tags_storage_index);
         document.getElementById('btn_delete_tags').addEventListener('click',delete_tags_storage_index);
         document.getElementById('set_pow').addEventListener('click', set_gain);
-        document.getElementById('button_pow').addEventListener('click', get_gain)
+        document.getElementById('button_pow').addEventListener('click', get_gain);
+        document.getElementById('update_wifi').addEventListener('click', fn_update_wifi);
       }
 
       //TODO: send backend -> toggle led
@@ -721,8 +757,28 @@
         websocket.send(JSON.stringify({'action':'save_tags','epc':epc,'room':parseInt(selectedValue)}));
       }
 
+      function fn_update_wifi(){
+        var ssid = document.getElementById("ssid").value;
+        var password = document.getElementById("password").value;
 
-      function delay_set(){
+        if (ssid === "" || password === "") {
+            alert("Please enter both SSID and password.");
+        } else {
+
+            if (password.length <= 8) {
+            alert("Password must be at least 8 characters long.");
+            } else {
+                // Do something with the ssid and password variables
+                console.log("SSID: " + ssid);
+                console.log("Password: " + password);
+                websocket.send(JSON.stringify({'action':'update_wifi',
+                              'ssid':ssid,'password':password}));
+            }
+            
+        }
+      }
+
+      function fn_delay_set(){
         
         var delay1 =  document.getElementById('delay_input1').value;
         var delay2 =  document.getElementById('delay_input2').value;

@@ -17,13 +17,16 @@ String ssid;
 String pass;
 String ip;
 String gateway;
+String ssid_ap;
+String pass_ap;
 
 // File paths to save input values permanently
 const char* ssidPath = "/ssid.txt";
 const char* passPath = "/pass.txt";
 const char* ipPath = "/ip.txt";
 const char* gatewayPath = "/gateway.txt";
-
+const char* ssid_ap_path = "/ssid_ap.txt";
+const char* ssid_pass_path = "/ssid_pass.txt";
 IPAddress localIP;
 //IPAddress localIP(192, 168, 1, 200); // hardcoded
 
@@ -458,7 +461,7 @@ void handle_finds_tags_storagre_index(DynamicJsonDocument json){
 }
 void handle_delete_tags_storagre_index(DynamicJsonDocument json){
   unsigned int _size;
-  String s_epc = json["epc"].as<String>();;
+  String s_epc = json["epc"].as<String>();
   // Serial.println("Crash ne: " + s_epc);
   
   byte byteArray[12] = {0};
@@ -480,6 +483,32 @@ void handle_delete_tags_storagre_index(DynamicJsonDocument json){
     Serial.printf("data send to web %s\n", data);
     ws.textAll(data, len);
 
+}
+
+void handle_update_wifi(DynamicJsonDocument json){
+  String ssid = json["ssid"].as<String>();
+  String pass = json["password"].as<String>();
+  
+
+  Serial.printf("Update wifi: %s: %s\n", ssid,pass);
+
+  writeFile(SPIFFS, ssid_ap_path, ssid.c_str());
+  writeFile(SPIFFS, ssid_pass_path, pass.c_str());
+
+
+  const uint8_t size = JSON_OBJECT_SIZE(2);
+  StaticJsonDocument<size> msg;
+  msg["action"] = "update_wifi";
+  msg["status"] = true;
+
+
+  char data[100];
+  size_t len = serializeJson(msg, data);
+  Serial.printf("data send to web %s\n", data);
+  ws.textAll(data, len);
+
+  delay(3000);
+  ESP.restart();
 }
 void notifyClients(String msg) {
   ws.textAll(msg);
@@ -549,6 +578,9 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len) {
         }
         else if(strcmp(action, "delete_tags") == 0){
           handle_delete_tags_storagre_index(json);
+        }
+        else if(strcmp(action, "update_wifi") == 0){
+          handle_update_wifi(json);
         }
   }
 }
@@ -624,6 +656,9 @@ void cleanWifiStorage(){
     deleteFile(SPIFFS, passPath);
     deleteFile(SPIFFS, ipPath);
     deleteFile (SPIFFS, gatewayPath);
+    deleteFile (SPIFFS, ssid_ap_path);
+    deleteFile (SPIFFS, ssid_pass_path);
+
 }
 // Initialize WiFi
 bool initWiFi() {
@@ -848,11 +883,17 @@ void WebSetup(){
     // }
 
 
-    // Connect to Wi-Fi network with SSID and password
+     // Connect to Wi-Fi network with SSID and password
+      ssid_ap = readFile(SPIFFS, ssid_ap_path);
+      pass_ap = readFile(SPIFFS, ssid_pass_path);
       Serial.println("Setting AP (Access Point)");
       // NULL sets an open Access Point
-      WiFi.softAP("WIFI-MANAGER", "123456789");
-
+      if(ssid_ap=="" || pass_ap == ""){
+        WiFi.softAP("WIFI-CONFIG", "123456789");
+      }
+      else {
+        WiFi.softAP(ssid_ap, pass_ap);
+      }
       IPAddress IP = WiFi.softAPIP();
       Serial.print("AP IP address: ");
       Serial.println(IP); 

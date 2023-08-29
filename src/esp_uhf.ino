@@ -883,7 +883,7 @@ void uhf_process(){
     else
     {
        Serial.printf("Scanning....., Error Code: %X\n", rfc.error.ErrorCode());
-       delay(50);
+       delay(100);
     }
 }
 
