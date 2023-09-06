@@ -115,6 +115,15 @@ byte test_source[12] = {0xE2,0x80,0x68, 0x94, 0x0,0x0, 0x50, 0x1A, 0x4D, 0x13, 0
 byte data[12] = {0x0};
 
 extern uint8_t tm_delay[ROOM_NUMBER];
+void onRelay(ROOM_ADDR room, uint32_t delay){
+    for(int i = 0; i < ROOM_NUMBER; i++ ){
+        if(room == table[i]){
+            mux.write(LOW, i);
+            delay(delay*1000);
+            mux.write(HIGH, i);
+        }
+    }
+}
 void onLed(ROOM_ADDR room){
     for(int i = 0; i < ROOM_NUMBER; i++ ){
         if(room == table[i]){
@@ -856,10 +865,12 @@ void uhf_process(){
                     );
                     delay(300);
                     EasyBuzzer.stopBeep();
-                    delay(tm_delay[i]*1000);
-                    onLed(table[i]);
+                    // delay(tm_delay[i]*1000);
+                    // onLed(table[i]);
+                    onRelay(table[i],tm_delay[i]);
                     break;
                 }
+                break;
             }
             if(!res.res){
                 delay(1000);
